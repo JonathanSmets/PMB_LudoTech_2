@@ -170,6 +170,7 @@ function do_form_retour($action_piege=0,$piege_resa=0){
 	global $transferts_validation_actif;
 	
 	$form_retour_tpl_temp=$form_retour_tpl;
+	
 	if(!$this->expl_id) {
 		// l'exemplaire est inconnu
 		$this->expl_form="<div class='erreur'>".$this->expl_cb."&nbsp;: ${msg[367]}</div>";
@@ -260,6 +261,32 @@ function do_form_retour($action_piege=0,$piege_resa=0){
 		}
 	}
 	//affichage de l'erreur de site et eventuellement du formulaire de forcage  
+	
+	// TIPOS COCOF avril 2017
+	global $pmb_confirm_retour;
+	if ($pmb_confirm_retour && ! $_GET['confirmed'])  {
+		$this->expl_form = str_replace("!!expl_cb!!", $this->expl_cb, $this->expl_form);
+		
+		$form_retour_tpl_temp=str_replace('!!libelle!!',$this->expl->libelle, $form_retour_tpl_temp) ;
+		$form_retour_tpl_temp=str_replace('!!type_doc!!',$this->info_doc->type_doc, $form_retour_tpl_temp) ;
+		$form_retour_tpl_temp=str_replace('!!location!!',$this->info_doc->location, $form_retour_tpl_temp) ;
+		$form_retour_tpl_temp=str_replace('!!section!!',$this->info_doc->section, $form_retour_tpl_temp) ;
+		$form_retour_tpl_temp=str_replace('!!statut!!',$this->info_doc->statut, $form_retour_tpl_temp) ;
+		$form_retour_tpl_temp=str_replace('!!expl_cote!!',$this->expl->expl_cote, $form_retour_tpl_temp) ;
+		$form_retour_tpl_temp=str_replace('!!expl_cb!!',$this->expl_cb, $form_retour_tpl_temp) ;
+		$form_retour_tpl_temp=str_replace('!!expl_owner!!',$this->expl_owner_name, $form_retour_tpl_temp);
+		$form_retour_tpl_temp=str_replace('!!expl_id!!',$this->expl_id, $form_retour_tpl_temp);
+		
+		if($this->expl->pret_idempr)	$this->empr = new emprunteur($this->expl->pret_idempr, "", FALSE, 2);
+		if($this->empr) $expl_empr= pmb_bidi($this->empr->lien_nom_prenom);
+		$form_retour_tpl_temp=str_replace('!!expl_empr!!','Emprunté par : ' . $expl_empr, $form_retour_tpl_temp);
+		
+		$form_retour_tpl_temp=preg_replace('/!!.*!!/','', $form_retour_tpl_temp);
+		
+		$this->expl_form .= $form_retour_tpl_temp;
+		return;
+	}
+	// END TIPOS COCOF avril 2017
 		
 	$form_retour_tpl_temp=str_replace('!!html_erreur_site_tpl!!',$question_form, $form_retour_tpl_temp);	
 
@@ -644,7 +671,7 @@ function do_form_retour($action_piege=0,$piege_resa=0){
 			if ($p["AFF"]) $perso_aff .="<br />".$p["TITRE"]." ".$p["AFF"];
 		}
 	}
-	if ($perso_aff) $perso_aff= "<div class='row'>".$perso_aff."</div>" ;
+	if ($perso_aff) $perso_aff= "<div class='row'>".html_entity_decode($perso_aff, ENT_HTML5, "ISO-8859-1")."</div>" ;
 	$form_retour_tpl_temp=str_replace('!!perso_aff!!',$perso_aff, $form_retour_tpl_temp);
 	
 	if ($this->expl->expl_note) {

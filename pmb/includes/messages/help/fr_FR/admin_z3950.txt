@@ -1,4 +1,4 @@
-<h1>Z 39.50</h1>
-<p>Configuration du client Z39 50 pour l'import de notices.</p>
+<h1>Z.LudoTECH</h1>
+<p>Configuration du client Z.LudoTECH pour l'import de notices.</p>
 
-<b>Serveurs</b> liste les serveurs Z39.50 et permet d'en ajouter ou enlever.
+<b>Serveurs</b> liste les serveurs Z.LudoTECH et permet d'en ajouter ou enlever.

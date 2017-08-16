@@ -10,9 +10,9 @@ buts particuliers que vous poursuivez.</p>
 <p>Les sections exemplaires et notices permettent de d&eacute;finir les param&egrave;tres de l'application pour le pr&ecirc;t et les statistiques sur les documents.
 </p>
 
-<h2>Lecteurs</h2>
-<p>La section lecteurs permet de configurer les param&egrave;tres li&eacute;s &agrave; la cr&eacute;ation de lecteur : cat&eacute;gories et codes statistiques. 
-Elle permet &eacute;galement d'importer des donn&eacute;es externes correspondant &agrave; des lecteurs.
+<h2>Emprunteurs</h2>
+<p>La section emprunteurs permet de configurer les param&egrave;tres li&eacute;s &agrave; la cr&eacute;ation d'emprunteur : cat&eacute;gories et codes statistiques. 
+Elle permet &eacute;galement d'importer des donn&eacute;es externes correspondant &agrave; des emprunteurs.
 </p>
 
 <h2>Utilisateurs</h2>

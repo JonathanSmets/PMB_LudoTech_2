@@ -108,15 +108,18 @@ class editeur {
 				if ($l == '[S.l.]' AND $n == '[S.n.]') $this->isbd_entry = '[S.l.&nbsp;: s.n.]';
 				else $this->isbd_entry = $l.'&nbsp;: '.$n;
 					
-				if ($this->ville) {
-					if ($this->pays) $this->display = "$this->ville [$this->pays] : $this->name";
-					else $this->display = "$this->ville : $this->name";
+				/*if ($this->ville) {
+					if ($this->pays) $this->display = "$this->name : $this->ville [$this->pays] "; // TIPOS COCOF
+					else $this->display = "$this->name : $this->ville"; // TIPOS COCOF
 				} else {
-					if ($this->pays) $this->display = "[$this->pays] : $this->name";
+					if ($this->pays) $this->display = "$this->name : [$this->pays]"; // TIPOS COCOF
 					else $this->display = $this->name;
-				}
+				}*/ // TIPOS COCOF 14 novembre 2016 : not display editor city and country
+				
+				$this->display = $this->name; // TIPOS COCOF 14 novembre 2016 : not display editor city and country
+				
 				// Ajoute un lien sur la fiche editeur si l'utilisateur a acces aux autorites
-				if (SESSrights & AUTORITES_AUTH) $this->isbd_entry_lien_gestion = "<a href='./autorites.php?categ=editeurs&sub=editeur_form&id=".$this->id."' class='lien_gestion'>".$this->display."</a>";
+				if (SESSrights & AUTORITES_AUTH) $this->isbd_entry_lien_gestion = "<a href='./autorites.php?categ=editeurs&sub=editeur_form&id=".$this->id."' class='lien_gestion'>".$this->display."</a>, Editeur";
 				else $this->isbd_entry_lien_gestion = $this->display; 
 					
 			} else {

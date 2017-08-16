@@ -46,10 +46,10 @@ function encaisse_form($with_validated=false, $transacash_num=0) {
 			message='';
 			if (isNaN(f.somme.value)) {
 				message='".addslashes($msg["finance_enc_nan"])."';
-			} else {
+			} /*else {
 				if (f.somme.value<=0)
 					message='".addslashes($msg["finance_enc_mnt_neg"])."';
-			}
+			}*/
 			if (message) {
 				alert(message);
 				return false;
@@ -173,7 +173,7 @@ switch ($act) {
 		encaisse_form(true,$transacash_num);
 		break;
 	case "enc":
-		if ($somme*1>0) {
+		if ($somme*1>0 || $somme*1<0) { // TIPOS COCOF : negative transaction
 			//Generation de la transaction
 			if ($id_transaction=$cpte->record_transaction("",$somme,1,$val_transactions,1)) {
 				$cpte->validate_transaction($id_transaction);
@@ -195,7 +195,7 @@ switch ($act) {
 		}
 		break;
 	case "transac_add":			
-		if ($transactype_total*1>0) {
+		if ($transactype_total*1>0 || $transactype_total*1<0) {  // TIPOS COCOF : negative transaction
 			$transactype=new transactype($transactype_id);	
 			if($quantity) $aff_quantity=" ($quantity)";
 			//Generation de la transaction

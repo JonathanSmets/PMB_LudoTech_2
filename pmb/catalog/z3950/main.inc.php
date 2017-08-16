@@ -19,6 +19,8 @@ switch($action) {
 		break;
 	case 'import':
 	case 'integrer':
+		include ("./catalog/z3950/import.ludotech.inc.php");
+		break;
 	case 'integrerexpl':
 		include ("./catalog/z3950/import.inc.php");
 		break;

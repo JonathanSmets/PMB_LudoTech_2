@@ -1049,6 +1049,42 @@ $ptab[4] = "
 		<input type='text' class='saisie-80em' id='f_accompagnement' name='f_accompagnement' value=\"!!accompagnement!!\" />
 	</div>
 
+	<!--    Nombre de joueur minimum -->
+<div class='row'>
+	<label for='f_nmin' class='etiquette'>".$msg['259nbmin']."</label>
+</div>
+<div class='row'>
+	<input type='text' class='saisie-4em' id='f_nbmin' name='f_nbmin' value=\"!!nb_min!!\" />
+</div>
+<!--    Nombre de joueur maximum -->
+<div class='row'>
+	<label for='f_nmax' class='etiquette'>".$msg['259nbmax']."</label>
+</div>
+<div class='row'>
+	<input type='text' class='saisie-4em' id='f_nbmax' name='f_nbmax' value=\"!!nb_max!!\" />
+</div>
+<!--    age minimum   -->
+<div class='row'>
+	<label for='f_amin' class='etiquette'>".$msg['259agemin']."</label>
+</div>
+<div class='row'>
+	<input type='text' class='saisie-4em' id='f_agemin' name='f_agemin' value=\"!!age_min!!\" />
+</div>
+<!--    age maximum -->
+<div class='row'>
+	<label for='f_amax' class='etiquette'>".$msg['259agemax']."</label>
+</div>
+<div class='row'>
+	<input type='text' class='saisie-4em' id='f_agemax' name='f_agemax' value=\"!!age_max!!\" />
+</div>
+<!--   durée   -->
+<div class='row'>
+	<label for='f_dur' class='etiquette'>".$msg['259duree']."</label>
+</div>
+<div class='row'>
+	<input type='text' class='saisie-4em' id='f_duree' name='f_duree' value=\"!!duree!!\" />
+</div>
+			
 </div>
 ";
 
@@ -1075,6 +1111,31 @@ $ptab[5] = "
 		<textarea id='f_general_note' class='saisie-80em' name='f_general_note' rows='4' wrap='virtual'>!!general_note!!</textarea>
 	</div>
 
+	<!-- principe du jeu -->
+<div class='row'>
+	<label for='f_n_principe' class='etiquette'>".$msg['267principe']."</label>
+</div>
+<div class='row'>
+	<textarea id='f_n_principe' class='saisie-80em' name='f_n_principe' cols='62' rows='5' wrap='virtual'>!!n_principe!!</textarea>
+</div>
+
+<!-- analyse pédagogique -->
+<div class='row'>
+	<label for='f_n_analyse' class='etiquette'>".$msg['267analyse']."</label>
+</div>
+<div class='row'>
+	<textarea id='f_n_analyse' class='saisie-80em' name='f_n_analyse' cols='62' rows='5' wrap='virtual'>!!n_analyse!!</textarea>
+</div>
+
+<!-- regles du jeu -->
+<div class='row'>
+	<label for='f_n_regle' class='etiquette'>".$msg['267regle']."</label>
+</div>
+<div class='row'>
+	<textarea id='f_n_regle' class='saisie-80em' name='f_n_regle' cols='62' rows='10' wrap='virtual'>!!n_regle!!</textarea>
+    <input type='hidden' name='f_n_docnotice_hidden' value='!!f_n_docnotice_hidden!!'>
+</div>
+	
 	<!--	Note de contenu	-->
 	<div class='row'>
 		<label for='f_content_note' class='etiquette'>$msg[266]</label>
@@ -1680,6 +1741,41 @@ $form_notice = "
              alert(\"$msg[277]\");
              return false;
         }
+        
+        nbmin = form.f_nbmin.value;
+		nbmin = nbmin.replace(/^\s+|\s+$/g, ''); //trim la valeur
+        if(nbmin*0 !=0) {
+           alert(\"$msg[nbmin277]\");
+           return false;
+		}
+
+        nbmax = form.f_nbmax.value;
+		nbmax = nbmax.replace(/^\s+|\s+$/g, ''); //trim la valeur
+        if(nbmax*0 !=0) {
+           alert(\"$msg[nbmax277]\");
+           return false;
+		}
+
+        agemin = form.f_agemin.value;
+		agemin = agemin.replace(/^\s+|\s+$/g, ''); //trim la valeur
+        if(agemin*0 !=0) {
+           alert(\"$msg[agemin277]\");
+           return false;
+		}
+
+        agemax = form.f_agemax.value;
+		agemax = agemax.replace(/^\s+|\s+$/g, ''); //trim la valeur
+        if(agemax*0 !=0) {
+           alert(\"$msg[agemax277]\");
+           return false;
+		}
+
+        duree = form.f_duree.value;
+		duree = duree.replace(/^\s+|\s+$/g, ''); //trim la valeur
+        if(duree*0 !=0) {
+           alert(\"$msg[duree277]\");
+           return false;
+		}
         
         var selector = document.forms['notice'].elements['biblio_notice'].value;
         if(selector == 'art'){

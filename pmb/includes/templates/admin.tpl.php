@@ -2215,6 +2215,10 @@ $admin_proc_view_remote = "
 <script type='text/javascript'>document.forms['maj_proc'].elements['f_proc_name'].focus();</script>";
 
 // $admin_zbib_form : template form zbib
+/* (mdarville)
+ * Modification du formulaire d'insertion et de mises à jour du formulaire z3950.
+ * mise en commentaire de champs et de liens inutiles.
+ */
 $admin_zbib_form = "
 <form class='form-$current_module' name=zbibform method=post action=\"./admin.php?categ=z3950&sub=zbib&action=update&id=!!id!!\">
 <h3><span onclick='menuHide(this,event)'>!!form_title!!</span></h3>
@@ -2228,7 +2232,7 @@ $admin_zbib_form = "
 				</div>
 		</div>
 	<div class='row'>&nbsp;</div>
-	<div class='row'>
+	<!--<div class='row'>
 		<div class='colonne4' align='right'>
 				<label class='etiquette'>$msg[admin_Utilisation] &nbsp;</label>
 				</div>
@@ -2237,6 +2241,7 @@ $admin_zbib_form = "
 				</div>
 		</div>
 	<div class='row'>&nbsp;</div>
+	-->
 	<div class='row'>
 		<div class='colonne4' align='right'>
 				<label class='etiquette'>$msg[admin_Base] &nbsp;</label>
@@ -2255,7 +2260,7 @@ $admin_zbib_form = "
 				</div>
 		</div>
 	<div class='row'>&nbsp;</div>
-	<div class='row'>
+	<!--<div class='row'>
 		<div class='colonne4' align='right'>
 				<label class='etiquette'>$msg[admin_NumPort] &nbsp;</label>
 				</div>
@@ -2282,6 +2287,7 @@ $admin_zbib_form = "
 				</div>
 		</div>
 	<div class='row'>&nbsp;</div>
+	-->
 	<div class='row'>
 		<div class='colonne4' align='right'>
 				<label class='etiquette'>$msg[admin_user] &nbsp;</label>
@@ -2299,7 +2305,7 @@ $admin_zbib_form = "
 				<input type=text name=form_password value='!!password!!' size=50>
 				</div>
 		</div>
-	<div class='row'>&nbsp;</div>
+	<!--<div class='row'>&nbsp;</div>
 	<div class='row'>
 		<div class='colonne4' align='right'>
 				<label class='etiquette'>$msg[zbib_zfunc] &nbsp;</label>
@@ -2310,10 +2316,11 @@ $admin_zbib_form = "
 		</div>
 	<div class='row'> </div>
 	</div>
+	-->
 <div class='row'>
 	<div class='left'>
 		<input class='bouton' type='button' value='$msg[76]'  onClick=\"document.location='./admin.php?categ=z3950&sub=zbib'\">&nbsp;
-		<input class='bouton' type='button' value='$msg[admin_Attributs]' onClick=\"document.location='./admin.php?categ=z3950&sub=zattr&action=edit&bib_id=!!id!!'\">&nbsp;
+		<!--<input class='bouton' type='button' value='$msg[admin_Attributs]' onClick=\"document.location='./admin.php?categ=z3950&sub=zattr&action=edit&bib_id=!!id!!'\">&nbsp;-->
 		<input class='bouton' type='submit' value='$msg[77]' onClick=\"return test_form(this.form)\">
 		</div>
 	<div class='right'>

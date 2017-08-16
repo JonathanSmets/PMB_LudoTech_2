@@ -24,29 +24,37 @@ if(!$categ){
 //		$catalog_menu : Menu vertical du catalogage
 // ---------------------------------------------------------------------------
 // ancien début de catalog_menu <h3>$msg[129]</h3>
+// *** LC 31/03/2016 *** //
+// $catalog_menu = "
+// <div id='menu'>
+// <h3 onclick='menuHide(this,event)'>".$msg['recherche']."</h3>
+// <ul>
+// 	<li><a href='./catalog.php'>".$msg["recherche_catalogue"]."</a></li>
+// 	<li><a href='./catalog.php?categ=serials'>".$msg["recherche_periodique"]."</a></li>
+// 	<li><a href='./catalog.php?categ=last_records'>$msg[938]</a></li>
+// 	<li><a href='./catalog.php?categ=search_perso'>".$msg["search_perso_menu"]."</a></li>	
+// </ul>
+
+// <h3 onclick='menuHide(this,event)'>$msg[4057]</h3>
+// <ul>
+// 	<li><a href='./catalog.php?categ=create'>$msg[270]</a></li>";
 $catalog_menu = "
 <div id='menu'>
 <h3 onclick='menuHide(this,event)'>".$msg['recherche']."</h3>
 <ul>
 	<li><a href='./catalog.php'>".$msg["recherche_catalogue"]."</a></li>
-	<li><a href='./catalog.php?categ=serials'>".$msg["recherche_periodique"]."</a></li>
 	<li><a href='./catalog.php?categ=last_records'>$msg[938]</a></li>
-	<li><a href='./catalog.php?categ=search_perso'>".$msg["search_perso_menu"]."</a></li>	
-</ul>
+	<li><a href='./catalog.php?categ=search_perso'>".$msg["search_perso_menu"]."</a></li>
+	</ul>
 
-<h3 onclick='menuHide(this,event)'>$msg[4057]</h3>
-<ul>
+	<h3 onclick='menuHide(this,event)'>$msg[4057]</h3>
+	<ul>
 	<li><a href='./catalog.php?categ=create'>$msg[270]</a></li>";
 	if ($opac_avis_allow) $catalog_menu .=	"<li><a href='./catalog.php?categ=avis'>$msg[menu_gestion_avis]</a></li>";
 	if ($opac_allow_add_tag) $catalog_menu .=	"<li><a href='./catalog.php?categ=tags'>$msg[menu_gestion_tags]</a></li>";
 
+// *** LC 31/03/2016 *** //
 $catalog_menu .= "
-</ul>
-<h3 onclick='menuHide(this,event)'>$msg[771]</h3>
-<ul>
-	<li><a href='./catalog.php?categ=serials&sub=serial_form&id=0'>".$msg["new_serial"]."</a></li>
-	<li><a href='./catalog.php?categ=serials&sub=pointage&id=0'>".$msg["pointage_menu_pointage"]."</a></li>
-	<li><a href='./catalog.php?categ=serials&sub=circ_ask'>".$msg["serialcirc_ask_menu"]."</a></li>
 </ul>
 <h3 onclick='menuHide(this,event)'>$msg[caddie_menu]</h3>
 <ul>
@@ -62,6 +70,28 @@ $catalog_menu .= "
 </ul>
 <h3 onclick='menuHide(this,event)'>".$msg["externe_menu"]."</h3>
 <ul>";
+// $catalog_menu .= "
+// </ul>
+// <h3 onclick='menuHide(this,event)'>$msg[771]</h3>
+// <ul>
+// <li><a href='./catalog.php?categ=serials&sub=serial_form&id=0'>".$msg["new_serial"]."</a></li>
+// 	<li><a href='./catalog.php?categ=serials&sub=pointage&id=0'>".$msg["pointage_menu_pointage"]."</a></li>
+// 	<li><a href='./catalog.php?categ=serials&sub=circ_ask'>".$msg["serialcirc_ask_menu"]."</a></li>
+// 			</ul>
+// 			<h3 onclick='menuHide(this,event)'>$msg[caddie_menu]</h3>
+// 					<ul>
+// 					<li><a href='./catalog.php?categ=caddie'>$msg[caddie_menu_gestion]</a></li>
+// 							<li><a href='./catalog.php?categ=caddie&sub=collecte'>$msg[caddie_menu_collecte]</a></li>
+// 									<li><a href='./catalog.php?categ=caddie&sub=pointage'>$msg[caddie_menu_pointage]</a></li>
+// 									<li><a href='./catalog.php?categ=caddie&sub=action'>$msg[caddie_menu_action]</a></li>
+// 									</ul>
+// 									<h3 onclick='menuHide(this,event)'>$msg[etagere_menu]</h3>
+// 									<ul>
+// 									<li><a href='./catalog.php?categ=etagere'>$msg[etagere_menu_gestion]</a></li>
+// 									<li><a href='./catalog.php?categ=etagere&sub=constitution'>$msg[etagere_menu_constitution]</a></li>
+// </ul>
+// <h3 onclick='menuHide(this,event)'>".$msg["externe_menu"]."</h3>
+// <ul>";
 
 if ($z3950_accessible) {
 	$catalog_menu.= "<li><a href='./catalog.php?categ=z3950'>".$msg["externe_z3950"]."</a></li>";

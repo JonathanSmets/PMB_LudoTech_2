@@ -29,4 +29,6 @@ if($form_cb_expl) {
 	$expl->do_form_retour($action_piege,$piege_resa);
 }
 print $expl->cb_tmpl.$expl->expl_form;
+// TIPOS cocof avril 2017
+//print ($pmb_confirm_retour && $form_cb_expl) ? $expl->expl_form : $expl->cb_tmpl.$expl->expl_form  ;
 

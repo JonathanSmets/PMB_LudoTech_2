@@ -13,6 +13,7 @@ if ((SESSrights & RESTRICTCIRC_AUTH) && ($categ!="pret") && ($categ!="pretrestri
 } else {
 	$menu_groupexpl="";
 	if($pmb_pret_groupement)$menu_groupexpl="<li id='circ_menu_voir_document'><a href='./circ.php?categ=groupexpl'>".$msg['groupexpl_submenu_list_title']."</a></li>";
+	// *** LC 31/03/2016 *** //
 	$circ_menu = "
 	<div id='menu'>
 	<h3 onclick='menuHide(this,event)'>$msg[5]</h3>
@@ -22,9 +23,20 @@ if ((SESSrights & RESTRICTCIRC_AUTH) && ($categ!="pret") && ($categ!="pretrestri
 		<li id='circ_menu_msgcirc_doc_a_traiter'><a href='./circ.php?categ=ret_todo'>".$msg["circ_doc_a_traiter"]."</a></li>
 		<li id='circ_menu_msg903'><a href='./circ.php?categ=groups'>$msg[903]</a></li>
 		<li id='circ_menu_msg15'><a href='./circ.php?categ=empr_create'>$msg[15]</a></li>
-		<li id='circ_menu_msg17'><a href='./circ.php?categ=serialcirc'>".$msg["serialcirc_circ_menu"]."</a></li>
 		$menu_groupexpl
 	</ul>";
+// 	$circ_menu = "
+// 	<div id='menu'>
+// 	<h3 onclick='menuHide(this,event)'>$msg[5]</h3>
+// 	<ul>
+// 	<li id='circ_menu_msg13'><a href='./circ.php?categ='>$msg[13]</a></li>
+// 	<li id='circ_menu_msg14'><a href='./circ.php?categ=retour'>$msg[14]</a></li>
+// 	<li id='circ_menu_msgcirc_doc_a_traiter'><a href='./circ.php?categ=ret_todo'>".$msg["circ_doc_a_traiter"]."</a></li>
+// 			<li id='circ_menu_msg903'><a href='./circ.php?categ=groups'>$msg[903]</a></li>
+// 			<li id='circ_menu_msg15'><a href='./circ.php?categ=empr_create'>$msg[15]</a></li>
+// 			<li id='circ_menu_msg17'><a href='./circ.php?categ=serialcirc'>".$msg["serialcirc_circ_menu"]."</a></li>
+// 					$menu_groupexpl
+// 					</ul>";
 	if ($empr_show_caddie) {
 		$circ_menu.="<h3 onclick='menuHide(this,event)'>$msg[empr_caddie_menu]</h3>
 			<ul>

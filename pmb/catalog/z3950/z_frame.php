@@ -21,8 +21,9 @@ if ($clause=="") {
 		}
 	}
 
-if ($clause!="")
-	$selection_bib="where bib_id in (".$clause.") ";
+if ($clause!="") 
+	$selection_bib="where id_ludotech in (".$clause.") ";
+    // where id_ludotech in ("id des ludotech selectionnee")
 else
 	$selection_bib;
 

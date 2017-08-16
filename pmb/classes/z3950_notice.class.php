@@ -78,6 +78,11 @@ class z3950_notice {
 	var $general_note;
 	var $content_note;
 	var $abstract_note;
+	// (mdarville) ajout des champs principe, analyse et regles
+	var $n_principe;
+	var $n_analyse;
+	var $n_regle;
+	var $n_urlregle;
 
 	var $internal_index;
 	
@@ -100,6 +105,13 @@ class z3950_notice {
 	var $categories =	array();// les categories
 	var $categorisation_type = "categorisation_auto";
 
+	// (mdarville) ajout des nouveaux champ;
+	var $nbmax;
+	var $nbmin;
+	var $agemin;
+	var $agemax;
+	var $duree;
+	
 	var $info_600_3 = array() ;
 	var $info_600_a = array() ;
 	var $info_600_b = array() ;
@@ -225,7 +237,11 @@ class z3950_notice {
 	//upload_vignette
 	var $flag_upload_vignette="";
 	
-	function z3950_notice ($type, $marc = NULL, $source_id=0) {
+	var $persos;
+	
+
+	
+	function z3950_notice ($type, $marc = NULL, $source_id=0, $tab_authors = NULL, $tab_publishers = NULL) {
 		
 		$type = strtolower ($type);
 		switch ($type) {
@@ -233,6 +249,10 @@ class z3950_notice {
 				$this->from_form();
 				break;
 			case 'from_scratch' :
+				break;
+			case 'normal' :
+				// traitement des records venant de la ludotech
+				$this->from_ludotech ($marc, $tab_authors, $tab_publishers);
 				break;
 			default :
 			 	if ($marc != NULL) {
@@ -334,6 +354,19 @@ class z3950_notice {
 			$this->internal_index = indexint::import(clean_string($this->dewey[0]), clean_string($this->dewey["new_comment"]), clean_string($this->dewey["new_pclass"]));
 		} 
 		
+		$title_indexes_wew = $this->serie." ".$this->nbr_in_serie ;
+		for ($i = 0; $i < 4; $i++) {
+			$title_indexes_wew .= " ".$this->titles[$i] ;
+		}
+		$title_indexes_sew = strip_empty_words ($title_indexes_wew);
+		$this->serie ? $serie_index = ' '.strip_empty_words ($this->serie).' ' : $serie_index='' ;
+		
+		$this->free_index ? $this->matieres_index = ' '.strip_empty_words($this->free_index).' ' : $this->matieres_index = '';
+		
+		$this->general_note	? $index_n_gen = ' '.strip_empty_words($this->general_note).' ' : $index_n_gen = '';
+		$this->content_note	? $index_n_contenu = ' '.strip_empty_words($this->content_note).' ' : $index_n_contenu = '';
+		$this->abstract_note ? $index_n_resume = ' '.strip_empty_words($this->abstract_note).' ' : $index_n_resume = '';
+		
 		$date_parution_z3950 = notice::get_date_parution($this->year);
 	
 		/* Origine de la notice */
@@ -380,6 +413,11 @@ class z3950_notice {
 			tit2            ,
 			tit3            ,
 			tit4            ,
+			nbmin           ,
+            nbmax           ,
+            agemin          ,
+            agemax          ,
+            duree           ,
 			tparent_id      ,
 			tnvol           ,
 			ed1_id          ,
@@ -396,6 +434,9 @@ class z3950_notice {
 			n_gen           ,
 			n_contenu       ,
 			n_resume        ,
+			n_principe      ,
+            n_analyse       ,
+            n_regle         ,
 			indexint,
 			statut,
 			commentaire_gestion,
@@ -408,6 +449,9 @@ class z3950_notice {
 			eformat,
 			origine_catalogage,
 			prix,
+			index_n_gen,
+			index_n_contenu,
+			index_n_resume,
 			create_date,
 			date_parution,
 			indexation_lang
@@ -418,6 +462,11 @@ class z3950_notice {
 			'".$this->titles[1]."',
 			'".$this->titles[2]."',
 			'".$this->titles[3]."',
+			'".$this->nbmin."',
+            '".$this->nbmax."',
+            '".$this->agemin."',
+            '".$this->agemax."',
+            '".$this->duree."',
 			'".$serie_id."',
 			'".$this->nbr_in_serie."',
 			".$editor_ids[0]." ,
@@ -434,6 +483,9 @@ class z3950_notice {
 			'".$this->general_note."',
 			'".$this->content_note."',
 			'".$this->abstract_note."',
+			'".$this->n_principe."',
+			'".$this->n_analyse."',
+			'".$this->n_regle."',
 			'".$this->internal_index."',
 			'".$this->statut."',
 			'".$this->commentaire_gestion."',
@@ -446,6 +498,9 @@ class z3950_notice {
 			'".$this->link_format."',
 			'".$this->orinot_id."',
 			'".$this->prix."',
+			'".$index_n_gen."',
+			'".$index_n_contenu."',
+			'".$index_n_resume."',
 			sysdate(),
 			'".$date_parution_z3950."',
 			'".$this->indexation_lang."'
@@ -882,6 +937,10 @@ class z3950_notice {
 			$this->internal_index = indexint::import(clean_string($this->dewey[0]), clean_string($this->dewey["new_comment"]), clean_string($this->dewey["new_pclass"]));
 		}
 		
+		$this->general_note	?	$index_n_gen = strip_empty_words($this->general_note) : $index_n_gen = '';
+		$this->content_note	?	$index_n_contenu = strip_empty_words($this->content_note) : $index_n_contenu = '';
+		$this->abstract_note	?	$index_n_resume = strip_empty_words($this->abstract_note) : $index_n_resume = '';
+		
 		$date_parution_z3950 = notice::get_date_parution($this->year);
 		/* Origine de la notice */
 		$this->orinot_id = origine_notice::import($this->origine_notice);
@@ -893,7 +952,12 @@ class z3950_notice {
 			tit1                    ='".$this->titles[0]."',             
 			tit2                    ='".$this->titles[1]."',             
 			tit3                    ='".$this->titles[2]."',             
-			tit4                    ='".$this->titles[3]."',             
+			tit4                    ='".$this->titles[3]."', 
+			nbmin                   ='".$this->nbmin."',
+			nbmax                   ='".$this->nbmax."',
+			agemin                  ='".$this->agemin."',
+			agemax                  ='".$this->agemax."',
+			duree                   ='".$this->duree."',            
 			tparent_id              ='".$serie_id."',                    
 			tnvol                   ='".$this->nbr_in_serie."',          
 			ed1_id                  =".$editor_ids[0]." ,                
@@ -909,7 +973,10 @@ class z3950_notice {
 			mention_edition         ='".$this->mention_edition."',       
 			n_gen                   ='".$this->general_note."',          
 			n_contenu               ='".$this->content_note."',          
-			n_resume                ='".$this->abstract_note."',         
+			n_resume                ='".$this->abstract_note."',
+			n_principe              ='".$this->n_principe."',
+			n_analyse               ='".$this->n_analyse."',
+			n_regle                 ='".$this->n_regle."',         
 			indexint                ='".$this->internal_index."',          
 			statut					='".$this->statut."',
 			commentaire_gestion		='".$this->commentaire_gestion."',
@@ -922,6 +989,9 @@ class z3950_notice {
 			eformat                 ='".$this->link_format."',           
 			origine_catalogage      ='".$this->orinot_id."',             
 			prix                    ='".$this->prix."',
+			index_n_gen             ='".$index_n_gen."',               
+			index_n_contenu         ='".$index_n_contenu."',           
+			index_n_resume          ='".$index_n_resume."',
 			date_parution 			='".$date_parution_z3950."'             
 			where notice_id='$id_notice' ";
 		//echo "<pre>";
@@ -1089,7 +1159,8 @@ class z3950_notice {
 		$nb_autres_auteurs = 0 ;
 		$nb_auteurs_secondaires = 0 ;//print "<pre>";print_r($this->aut_array);print "</pre>";
 		for ($as = 0 ; $as < sizeof($this->aut_array) ; $as++ ){
-			if ($this->aut_array[$as]["responsabilite"]===0) {
+			// FFI if ($this->aut_array[$as]["responsabilite"]===0) {
+			if ($this->aut_array[$as]["responsabilite"]== "0" || $this->aut_array[$as]["responsabilite"]===0  ) {
 				$numrows = 0;
 				if ($this->aut_array[$as]["date"]) {
 					$sql_author_find = "SELECT author_id, author_name, author_rejete, author_date FROM authors WHERE author_name = '".addslashes($this->aut_array[$as]["entree"])."' AND author_rejete = '".addslashes($this->aut_array[$as]["rejete"])."' AND author_type = '".$this->aut_array[$as]["type_auteur"]."' AND author_date ='".addslashes($this->aut_array[$as]["date"])."'";
@@ -1460,11 +1531,22 @@ class z3950_notice {
 		z3950_notice::substitute ("prix", $this->prix, $ptab[4]);
 		z3950_notice::substitute ("accompagnement", $this->accompagnement, $ptab[4]);
 		z3950_notice::substitute ("size", $this->size, $ptab[4]);
+		// (mdarville) Insertion des nouveaux champs
+		$this->substitute ("nb_min", $this->nbmin, $ptab[4]);
+		$this->substitute ("nb_max", $this->nbmax, $ptab[4]);
+		$this->substitute ("age_min", $this->agemin, $ptab[4]);
+		$this->substitute ("age_max", $this->agemax, $ptab[4]);
+		$this->substitute ("duree", $this->duree, $ptab[4]);
 		$form_notice = str_replace('!!tab4!!', $ptab[4], $form_notice);
 
 		z3950_notice::substitute ("general_note", $this->general_note, $ptab[5]);
 		z3950_notice::substitute ("content_note", $this->content_note, $ptab[5]);
 		z3950_notice::substitute ("abstract_note", $this->abstract_note, $ptab[5]);
+		// (mdarville) ajout des champs principe, analyse et regles du jeu
+		$this->substitute("n_principe", $this->n_principe, $ptab[5]);
+		$this->substitute("n_analyse", $this->n_analyse, $ptab[5]);
+		$this->substitute("n_regle", $this->n_regle, $ptab[5]);
+		$this->substitute("f_n_docnotice_hidden", $this->n_urlregle, $ptab[5]);
 		$form_notice = str_replace('!!tab5!!', $ptab[5], $form_notice);
 
 		// indexation interne
@@ -1537,6 +1619,45 @@ class z3950_notice {
 
 		// indexation libre
 		z3950_notice::substitute ("f_free_index", $this->free_index, $ptab[6]);
+		
+		$nb = 0;
+		if(!empty ($this->free_index)) {
+			$nb = 1;
+			for($i=0;$i<strlen($this->free_index);$i++) {
+				if(substr($this->free_index,$i,1) == $pmb_keyword_sep) {
+					$nb++;
+				}
+			}
+		}
+		$mots_cles_temp = $this->free_index;
+		$tab_mots_cles = array();
+		for($i=0;$i<$nb;$i++) {
+			if(strpos($mots_cles_temp, $pmb_keyword_sep)) {
+				$pos = strpos($mots_cles_temp, $pmb_keyword_sep);
+				$tab_mots_cles[$i] = substr($mots_cles_temp, 0, $pos);
+				$mots_cles_temp = substr($mots_cles_temp,$pos+1);
+			} else {
+				$tab_mots_cles[$i] = $mots_cles_temp;
+			}
+		}
+		// (mdarville) recherche des mots clÃ¨s
+		$query = "select * from mots_cles order by mot asc";
+		$res=mysql_query($query,$dbh);
+		$f_indexation_list_size = mysql_num_rows($res);
+		$f_indexation_list_body = "";
+		for($i=0;$i<$f_indexation_list_size;$i++) {
+			$ligne=mysql_fetch_object($res);
+			$selected = "";
+			for($j=0;$j < $nb;$j++) {
+				if($ligne->mot == $tab_mots_cles[$j]) {
+					$selected = "selected";
+				}
+			}
+			$f_indexation_list_body .= "<option $selected>".htmlentities($ligne->mot,ENT_QUOTES, $charset)."</option>";;
+		}
+		//$ptab[6] = str_replace('!!f_indexation_list_size!!', htmlentities($f_indexation_list_size,ENT_QUOTES, $charset), $ptab[6]);
+		$ptab[6] = str_replace('!!f_free_index_list_body!!', $f_indexation_list_body, $ptab[6]);
+		
 		global $pmb_keyword_sep ;
 		$sep="'$pmb_keyword_sep'";
 		if (!$pmb_keyword_sep) $sep="' '";
@@ -1889,7 +2010,9 @@ class z3950_notice {
 		$ptab[6] = str_replace("!!categories_repetables!!", $ptab_categ, $ptab[6]);	
 		$ptab[6] = str_replace('!!tab_categ_order!!', "", $ptab[6]);
 		
-		$traitement_rameau=traite_categories_for_form($tableau_600,$tableau_601,$tableau_602,$tableau_605,$tableau_606,$tableau_607,$tableau_608);
+		// $traitement_rameau=traite_categories_for_form($tableau_600,$tableau_601,$tableau_602,$tableau_605,$tableau_606,$tableau_607,$tableau_608); // TIPOS LUDOTHEQUES
+		$traitement_rameau=traite_categories_for_form($this->categories);
+		
 		if (!is_array($traitement_rameau)) {
 			$traitement_rameau = array("form" => $traitement_rameau, "message" => "");
 		}
@@ -1899,51 +2022,30 @@ class z3950_notice {
 		$manual_categorisation_form = get_manual_categorisation_form($tableau_600,$tableau_601,$tableau_602,$tableau_604,$tableau_605,$tableau_606,$tableau_607,$tableau_608);
 		$form_notice = str_replace('!!manual_categorisation!!', $manual_categorisation_form, $form_notice);
 
-		//Mise à jour de l'onglet 9
 		$p_perso=new parametres_perso("notices");
+		
 		if(function_exists("param_perso_form")) {
 			param_perso_form($p_perso);			
 		}
 		
-		//pour Pubmed et DOI, on regarde si on peut remplir un champ résolveur...
-		if(count($this->others_ids)>0){
-			foreach($p_perso->t_fields as $key => $t_field){
-				if($t_field['TYPE']  =="resolve"){
-					$field_options = _parser_text_no_function_("<?xml version='1.0' encoding='".$charset."'?>\n".$t_field['OPTIONS'], "OPTIONS");
-					foreach($field_options['RESOLVE'] as $resolve){
-						//pubmed = 1 | DOI = 2
-						foreach($this->others_ids as $other_id){
-							if($other_id['b'] == "PMID" && $resolve['ID']=="1"){
-								//on a le champ perso résolveur PubMed
-								$p_perso->values[$key][]=$other_id['a']."|1";
-							}else if($other_id['b'] == "DOI" && $resolve['ID']=="2"){
-								//on a le champ perso résolveur DOI
-								$p_perso->values[$key][]=$other_id['a']."|2";
-							}
-						}
-					}
-				}
-			}
-		}
-		
 		if (!$p_perso->no_special_fields) {
-			$perso_=$p_perso->show_editable_fields($id_notice,true);
+			// si on duplique, construire le formulaire avec les donnees de la notice d'origine
+			$perso_ = $this->persos;
+			
 			$perso="";
 			for ($i=0; $i<count($perso_["FIELDS"]); $i++) {
 				$p=$perso_["FIELDS"][$i];
-				$perso.="<div class='row'>
-					<label for='".$p["NAME"]."' class='etiquette'>".$p["TITRE"]."</label>
-					</div>
-					<div class='row'>
-					".$p["AFF"]."
-					</div>
-					";
+				$perso.="<div id='move_".$p["NAME"]."' movable='yes' title=\"".htmlentities($p["TITRE"],ENT_QUOTES, $charset)."\">
+							<div class='row'><label for='".$p["NAME"]."' class='etiquette'>".htmlentities($p["TITRE"],ENT_QUOTES, $charset)."</label></div>
+							<div class='row'>".$p["AFF"]."</div>
+						 </div>";
 			}
 			$perso.=$perso_["CHECK_SCRIPTS"];
 			$ptab[9]=str_replace("!!champs_perso!!",$perso,$ptab[9]);
 		} else 
-			$ptab[9]="\n<script type='text/javascript' >function check_form() { return true; }</script>\n";
-		$form_notice = str_replace('!!tab9!!', $ptab[9], $form_notice);
+			$ptab[9]="\n<script>function check_form() { return true; }</script>\n";
+		
+			$form_notice = str_replace('!!tab9!!', $ptab[9], $form_notice);
 
 		// champs de gestion
 		global $pmb_notice_img_folder_id;
@@ -2099,7 +2201,8 @@ class z3950_notice {
 			$f_language_code, $f_original_language_code,
 			$f_link_url, $f_link_format,
 			$f_orinot_nom, $f_orinot_pays,
-			$form_notice_statut, $f_commentaire_gestion, $f_thumbnail_url ;
+			$form_notice_statut, $f_commentaire_gestion, $f_thumbnail_url,
+			$f_nbmin, $f_nbmax, $f_agemin, $f_agemax, $f_duree, $f_n_principe, $f_n_analyse, $f_n_regle,$f_n_docnotice_hidden;
 		global $categ_pas_trouvee, $pmb_keyword_sep, $categorisation_type,$indexation_lang; 
 		global $pmb_notice_img_folder_id,$opac_url_base,$item;
 
@@ -2360,16 +2463,29 @@ class z3950_notice {
 		$this->mention_edition = clean_string ($f_mention_edition);
 
 		$this->isbn = clean_string ($f_cb);
+		
+		
 
 		$this->page_nbr = clean_string ($f_page_nbr);
 		$this->illustration = clean_string ($f_illustration);
 		$this->size = clean_string ($f_size);
 		$this->prix = clean_string ($f_prix);
 		$this->accompagnement = clean_string ($f_accompagnement);
+		
+		// (mdarville) transfert des nouvelles données.
+		$this->nbmin = clean_string ($f_nbmin);
+		$this->nbmax = clean_string ($f_nbmax);
+		$this->agemin = clean_string ($f_agemin);
+		$this->agemax = clean_string ($f_agemax);
+		$this->duree = clean_string ($f_duree);
 
 		$this->general_note = $f_general_note;
 		$this->content_note = $f_content_note;
 		$this->abstract_note = $f_abstract_note;
+		$this->n_principe = clean_string($f_n_principe);
+		$this->n_analyse = clean_string($f_n_analyse);
+		$this->n_regle = clean_string($f_n_regle);
+		$this->n_urlregle = clean_string($f_n_docnotice_hidden);
 
 		// catégories
 		if ($categorisation_type == "categorisation_auto") {
@@ -3521,6 +3637,113 @@ class z3950_notice {
 		
 	}
 
+	function from_ludotech ($record, $tab_authors, $tab_publishers) {
+	
+		$this->document_type = $record['typedoc'];
+		$this->isbn = $record['code'];
+		$this->titles[0] = $record['tit1'];
+		$this->titles[1] = $record['tit2'];
+		$this->titles[2] = "";
+		$this->titles[3] = "";
+		$this->serie = "";
+		$this->nbr_in_serie = "";
+		$this->editors[0]['name']= "";
+		$this->editors[0]['ville']= "";
+		$this->editors[1]['name']= "";
+		$this->editors[1]['ville']= "";
+	
+		if(!empty ($tab_publishers)){
+			for($cpt_publishers = 0; $cpt_publishers < count($tab_publishers); $cpt_publishers++) {
+				$this->editors[$cpt_publishers]['name']= $tab_publishers[$cpt_publishers]['name'];
+				$this->editors[$cpt_publishers]['ville']= $tab_publishers[$cpt_publishers]['ville'];
+			}
+		}
+		$this->year = "";
+		$this->page_nbr = "";
+		$this->illustration = "";
+		$this->size = "";
+		$this->accompagnement = "";
+		// (mdarville) stockage des nouveaux champs.
+		$this->nbmin = $record['nbmin'];
+		$this->nbmax = $record['nbmax'];
+		$this->agemin = $record['agemin'];
+		$this->agemax = $record['agemax'];
+		$this->duree = $record['duree'];
+		$this->collection['name']=clean_string("");
+		$this->collection['issn']=clean_string("");
+		$this->subcollection['name']=clean_string("");
+		$this->subcollection['issn'] = clean_string("");
+		$this->nbr_in_collection = "";
+		$this->mention_edition = $record['mention_edition'];
+		$this->general_note = $record['ngen'];
+		$this->content_note = $record['n_contenu'];
+		$this->abstract_note = $record['n_resume'];
+		// (mdarville) ajout des champs analyse, principe et regles de jeux.
+		$this->n_principe = $record['n_principe'];
+		$this->n_analyse = $record['n_analyse'];
+		$this->n_regle = $record['n_regle'];
+		$this->n_urlregle = $record['docnotice'];
+		$this->internal_index = $record['indexint'];
+		//$this->statut = $record['statut'];
+		$this->commentaire_gestion = $record['commentaire_gestion'];
+		$this->thumbnail_url = $record['thumbnail_url'];
+		$this->free_index = $record['index_l'];
+		$this->matieres_index = $record['index_matieres'];
+		$this->bibliographic_level = $record['niveau_biblio'];
+		$this->hierarchic_level = $record['niveau_hierar'];
+		$this->link_url = $record['lien'];
+		$this->link_format = $record['eformat'];
+		//$this->orinot_id = $record['origine_catalogage'];
+		$this->prix = $record['prix'];
+		//$this->general_note = $record['index_n_gen'];
+		$this->general_note = '';
+		//$this->content_note = $record['index_n_contenu'];
+		//$this->abstract_note = $record['index_n_resume'];
+		$this->abstract_note = '';
+	
+		$this->aut_array = array();
+		//print count($tab_authors)."<br>";
+		if(!empty ($tab_authors)){
+			for($cpt_authors = 0;$cpt_authors < count($tab_authors); $cpt_authors++){
+				//  print $cpt_authors;
+				$this->aut_array[] = array(
+						"entree" => $tab_authors[$cpt_authors]['author_name'],
+						"rejete" => $tab_authors[$cpt_authors]['author_rejete'],
+						"date" => $tab_authors[$cpt_authors]['author_date'],
+						"type_auteur" => $tab_authors[$cpt_authors]['author_type'],
+						"fonction" => $tab_authors[$cpt_authors]['responsability_fonction'],
+						"id" => 0,
+						"responsabilite" => $tab_authors[$cpt_authors]['responsability_type'] ) ;
+				/*
+				 print "aut_array <br>";
+				 print $this->aut_array[$cpt_authors]['entree']."<br>";
+				 print $this->aut_array[$cpt_authors]['rejete']."<br>";
+				 print $this->aut_array[$cpt_authors]['date']."<br>";
+				 print $this->aut_array[$cpt_authors]['type_auteur']."<br>";
+				 print $this->aut_array[$cpt_authors]['fonction']."<br>";
+				 print $this->aut_array[$cpt_authors]['id']."<br>";
+				 print $this->aut_array[$cpt_authors]['responsabilite']."<br>";
+	
+				 print "tab_author <br>";
+				 print $tab_authors[$cpt_authors]['author_name']."<br>";
+				 print $tab_authors[$cpt_authors]['author_rejete']."<br>";
+				 print $tab_authors[$cpt_authors]['author_date']."<br>";
+				 print $tab_authors[$cpt_authors]['author_type']."<br>";
+				 print $tab_authors[$cpt_authors]['responsability_fonction']."<br>";
+				 print $tab_authors[$cpt_authors]['responsability_type']."<br>";
+				 *
+				*/
+			}
+	
+		}
+	
+		//die("stop");
+		
+		$this->origine_notice['nom']= $record['orinot_nom'];
+		$this->origine_notice['pays']= $record['orinot_pays'];
+	
+	}
+	
 	function get_isbd_display () {
 		$tdoc = new marc_list('doctype');
 

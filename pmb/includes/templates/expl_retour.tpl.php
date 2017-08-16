@@ -47,10 +47,15 @@ $script_antivol_rfid="
 ";
 
 $confirmation_retour_tpl="
-<div class='right'>
+<div class='center'>
+	<!-- TIPOS cocof avril 2017-->
 	<input type='button' class='bouton' 
 		name='confirm_ret' value='".$msg['retour_confirm']."'
-		onClick=\"document.location='./circ.php?categ=retour&cb_expl=!!expl_cb!!'\">
+		onClick=\"document.location='./circ.php?categ=retour&confirmed=yes&cb_expl=!!expl_cb!!'\">
+	<input type='button' class='bouton' 
+		name='cancel_re' value='Annuler le retour'
+		onClick=\"document.location='./circ.php?categ=retour'\">
+   <!-- END TIPOS cocof avril 2017-->
 </div>";
 
 $retour_ok_tpl="

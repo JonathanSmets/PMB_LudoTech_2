@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="iso-8859-1" ?>
+<!DOCTYPE XMLlist SYSTEM "../XMLlist.dtd" [<!ENTITY nbsp "&amp;nbsp;">]>
+
+<!-- messages localisés en français pour l'OPAC de PMB
+$Id: fr_FR.xml,v 1.412.2.13 2015-12-11 11:14:34 jpermanne Exp $ -->
+
+<XMLlist>
+<entry code="l_browse_title">Vous n'avez pas d'idée pour chercher ? Entrez dans la ludothèque...</entry>
+</XMLlist>

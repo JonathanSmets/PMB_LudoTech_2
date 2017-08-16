@@ -117,6 +117,14 @@ class emprunteur {
 	var $fiche_retard = "";
 	var $opac_view_selected="";
 	var $mail_rappel_resp = 0;
+	
+	
+	// TIPOS PMB LUDOS : juin 2016
+	var $totalComptesAmendes = 0;
+	var $totalComptesPrets = 0;
+	var $totalComptesAbonnement = 0;
+	var $totalComptesAutres = 0;
+	// END TIPOS PMB LUDOS : juin 2016
 
 	// <----------------- constructeur ------------------>
 	function emprunteur ($id=0, $message='', $niveau_message=FALSE, $type_fiche=0) {
@@ -325,8 +333,11 @@ class emprunteur {
 				$novalid=$cpt->summarize_transactions("","",0,0);
 				if ($cpt_id) {
 					$compte.="<div class='colonne4'><div><strong><a href='./circ.php?categ=pret&sub=compte&id=".$this->id."&typ_compte=1'>".$msg["finance_solde_abt"]."</a></strong> ".comptes::format($solde)."</div>";
-					if ($novalid)
+					$this->totalComptesAbonnement += $solde; // TIPOS
+					if ($novalid) {
 						$compte.="<div>".$msg["finance_not_validated"]." : ".comptes::format($novalid)."</div>";
+						$this->totalComptesAbonnement += $novalid; // TIPOS
+					}
 
 					$compte.="</div>";
 				}
@@ -339,8 +350,11 @@ class emprunteur {
 				$novalid=$cpt->summarize_transactions("","",0,0);
 				if ($cpt_id) {
 					$compte.="<div class='colonne4'><div><strong><a href='./circ.php?categ=pret&sub=compte&id=".$this->id."&typ_compte=3'>".$msg["finance_solde_pret"]."</a></strong> ".comptes::format($solde)."</div>";
-					if ($novalid)
+					$this->totalComptesPrets += $solde; // TIPOS
+					if ($novalid) {
 						$compte.="<div>".$msg["finance_not_validated"]." : ".comptes::format($novalid)."</div>";
+						$this->totalComptesPrets += $novalid; // TIPOS
+					}
 					$compte.="</div>";
 				}
 				$n_c++;
@@ -353,13 +367,17 @@ class emprunteur {
 				if ($cpt_id) {
 					//Calcul des amendes
 					$amende=new amende($this->id,true);
-					$total_amende=$amende->get_total_amendes();
+					$total_amende=(0 - $amende->get_total_amendes());  // TIPOS COCOF
 					$this->nb_amendes=$amende->nb_amendes;
 					$compte.="<div class='colonne4'><div><strong><a href='./circ.php?categ=pret&sub=compte&id=".$this->id."&typ_compte=2'>".$msg["finance_solde_amende"]."</a></strong> ".comptes::format($solde)."</div>";
-					if ($novalid)
+					if ($novalid) {
 						$compte.="<div>".$msg["finance_not_validated"]." : ".comptes::format($novalid)."</div>";
-					if ($total_amende)
+						$this->totalComptesAmendes += $novalid; // TIPOS
+					}
+					if ($total_amende) {
 						$compte.="<div> ".$msg["finance_pret_amende_en_cours"]." : ".comptes::format($total_amende)."</div>";
+						$this->totalComptesAmendes += $total_amende; // TIPOS
+					}
 					$compte.="</div>";
 				}
 				$n_c++;
@@ -371,12 +389,15 @@ class emprunteur {
 				$cpt=new comptes($cpt_id);
 				$solde=$cpt->update_solde();
 				$novalid=$cpt->summarize_transactions("","",0,0);
+				$this->totalComptesAutres += $solde; // TIPOS
 				$compte.="
 				<div class='colonne4'>
 					<div>
 						<strong><a href='./circ.php?categ=pret&sub=compte&id=".$this->id."&typ_compte=4'>".$msg["transactype_empr_compte"]."</a></strong> ".comptes::format($solde)."</div>";
-				if ($novalid)
+				if ($novalid) {
 					$compte.="<div>".$msg["finance_not_validated"]." : ".comptes::format($novalid)."</div>";
+					$this->totalComptesAutres += $novalid; // TIPOS
+				}
 				$n_c++;
 			}
 			if ($n_c<3) {
@@ -561,6 +582,32 @@ class emprunteur {
 		else
 			$this->fiche = str_replace('!!empr_pwd!!',"",$this->fiche);
 		$this->fiche = str_replace('!!comptes!!'    , $this->compte, $this->fiche);
+		
+		// TIPOS LUDOS juin 2016
+		$totalGeneral = $this->totalComptesAbonnement + $this->totalComptesPrets + $this->totalComptesAmendes + $this->totalComptesAutres;
+		$totalGeneralNeeded = 0 + ($this->totalComptesAbonnement != 0 ? 1 : 0) + ($this->totalComptesPrets != 0 ? 1 : 0) + ($this->totalComptesAmendes != 0 ? 1 : 0) + ($this->totalComptesAutres != 0 ? 1 : 0) ; 
+		$totalLudos = "";
+		if ($totalGeneral != 0) {			
+			$totalLudos .=  "<br>";
+			$totalLudos .=  "<span style='color:RED;'>";
+			$totalLudos .= "<h1 style='color:RED;'>Montant total : </h1>" ;
+			$totalLudos .=  "<table style='border:1px solid; width:400px'>";
+			$totalLudos .= $this->totalComptesAbonnement ? "<tr><td>Total Abonnement : </td><td style='border-left:1px solid'>" . comptes::format($this->totalComptesAbonnement) . "</td></tr>" : "" ;
+			$totalLudos .= $this->totalComptesPrets ? "<tr><td>Total Prêts :  </td><td style='border-left:1px solid'>" . comptes::format($this->totalComptesPrets) . "</td></tr>" : "" ;
+			$totalLudos .= $this->totalComptesAmendes ? "<tr><td>Total Amendes :  </td><td style='border-left:1px solid'>" . comptes::format($this->totalComptesAmendes) . "</td></tr>"  : "" ;
+			$totalLudos .= $this->totalComptesAutres ? "<tr><td>Total Autres :  </td><td style='border-left:1px solid'>" . comptes::format($this->totalComptesAutres) . "</td></tr>" : "" ;
+			
+			$totalLudos .=  $totalGeneralNeeded > 1 ? "<tr style='font-weight: bold;'><td style='border:1px solid'>Total Général :  </td><td  style='border:1px solid'>" . comptes::format( $totalGeneral ). "</td></tr>"  : "" ;
+			// $totalLudos .=  "<table border='1'>";
+			$totalLudos .=  "</table>";
+			$totalLudos .=  "</span>";
+			$totalLudos .=  "<br>";
+		}
+		
+		$this->fiche = str_replace('!!comptesLudos!!'    , $totalLudos , $this->fiche);
+		
+		// END TIPOS
+		
 		$this->fiche = str_replace('!!empr_statut_libelle!!', $this->empr_statut_libelle, $this->fiche);
 		$this->fiche = str_replace('!!empr_picture!!', $this->picture_empr($this->cb), $this->fiche);
 		if ($empr_fiche_depliee=="1")
@@ -1579,6 +1626,20 @@ class emprunteur {
 			$this->fiche_consultation = str_replace('!!empr_pwd!!',"",$this->fiche_consultation);
 		}
 		$this->fiche_consultation = str_replace('!!comptes!!'    , $this->compte, $this->fiche_consultation);
+		// TIPOS LUDOS juin 2016
+		$totalLudos =  "<br>";
+		$totalLudos .= "<br>Total Abonnement : " . comptes::format($this->totalComptesAbonnement) ;
+		$totalLudos .= "<br>Total Prêts : " . comptes::format($this->totalComptesPrets) ;
+		$totalLudos .= "<br>Total Amendes : " . comptes::format($this->totalComptesAmendes) ;
+		$totalLudos .= "<br>Total Autres : " . comptes::format($this->totalComptesAutres) ;
+		$totalLudos .= "<br>-------------------------------------------------------------------" ;
+		$totalLudos .= "<br>Total Général : " . comptes::format( $this->totalComptesAbonnement + $this->totalComptesPrets + $this->totalComptesAmendes + $this->totalComptesAutres ) ;
+		$totalLudos =  "<br>";
+		
+		$this->fiche_consultation = str_replace('!!comptesLudos!!'    , $totalLudos , $this->fiche_consultation);
+		// END TIPOS
+		
+		
 		$this->fiche_consultation = str_replace('!!empr_statut_libelle!!', $this->empr_statut_libelle, $this->fiche_consultation);
 		$this->fiche_consultation = str_replace('!!empr_picture!!', $this->picture_empr($this->cb), $this->fiche_consultation);
 		if ($empr_fiche_depliee=="1") $this->fiche_consultation = str_replace('!!depliee!!'," startOpen=\"Yes\"", $this->fiche_consultation);

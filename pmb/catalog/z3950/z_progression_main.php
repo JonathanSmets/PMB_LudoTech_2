@@ -29,7 +29,7 @@ if ( ($clause=="")) {
 	echo "<a href=\"#\" onclick='history.go(-1); return false;'>$msg[z3950_autre_rech]</a>&nbsp;";
 	die();
 	}
-$selection_bib="where bib_id in (".$clause.") ";
+$selection_bib="where id_ludotech in (".$clause.") ";
 //
 // On récupère ID_query et on met à jour la base pour une prochaine recherche
 //

@@ -22,6 +22,7 @@ require ('notice.inc.php');
 // new for decoding record sutrs
 require_once ("z3950_sutrs.inc.php");
 include("$class_path/z3950_notice.class.php");
+require_once ("$base_path/includes/db_param_ludotech.php");
 
 //Correction myst�rieuse : visiblement la fonction yaz_search impacte la variable global $limite... modifi� en $limite_notices
 $limite_notices+=0;
@@ -65,8 +66,20 @@ while ($linea=pmb_mysql_fetch_array($rqt_bib_attr)) {
 	$$var = "" ;
 }
 
-$rq_bib_z3950=pmb_mysql_query("select * from z_bib $selection_bib order by bib_nom, bib_id ");
+/* (mdarville)
+ * recherche des données de toute les ludotech selectionnée
+ * $selection_bib contiendra un truc du genre "WHERE id_ludotech IN (-- id des ludotech selectionnee --)
+ */
+$rq_bib_z3950=mysql_query ("select * from z_ludotech $selection_bib order by libelle_ludotech, id_ludotech ");
+/* (mdarville)
+ * fetch sur les ludotech selectionnées pour reprendre leur données (necessaire pour notre connexions)
+ * il faudre surement ensuite faire des connexions pour aller chercher nos données sur les autres DB
+ */
+
+$ind = 0;
+$t1=time();
 while ($ligne=pmb_mysql_fetch_array($rq_bib_z3950)) {
+    	/*
     	$bib_id=$ligne["bib_id"];
 		$url=$ligne["url"];
 		$port=$ligne["port"];
@@ -77,6 +90,25 @@ while ($ligne=pmb_mysql_fetch_array($rq_bib_z3950)) {
 		$sutrs_lang=$ligne["sutrs_lang"];
 		$auth=$auth_user.$auth_pass;
 		$formato[$bib_id]=$format;
+     * 
+     */
+     /* (mdarville)
+      * Stockage des données d'acces aux ludotech.
+      */
+        $tab_ludotech[$ind] = $ligne["id_ludotech"];
+        $tab_ludotech_name[$ind] = $ligne["libelle_ludotech"];
+        $tab_ludotech_count[$ind] = 0;
+        $tab_ludotech_error[$ind] = 0;
+        $bib_id = $ligne["id_ludotech"];
+        $libelle_ludotech = $ligne["libelle_ludotech"];
+        $nameDB_ludotech = $ligne["nameDB_ludotech"];
+        $ip_ludotech = $ligne["ip_ludotech"];
+        $user_ludotech = $ligne["user_ludotech"];
+        $pwd_ludotech = $ligne["pwd_ludotech"];
+      /* (mdarville)
+       * il faudra, une fois que la requete sera crée, faire le connexion à la
+       * db distante.
+       */
 
 	// chargement des attributs de la bib s�lectionn�e
 	$rqt_bib_attr=pmb_mysql_query("select * from z_attr where attr_bib_id='$bib_id'");
@@ -87,15 +119,36 @@ while ($ligne=pmb_mysql_fetch_array($rq_bib_z3950)) {
 		$$var = $attr_attr ;
 	}
 
-	// On d�termine la requ�te � envoyer
+	// On d�termine la requ�te � envoyer
+    /* (mdarville)
+     * il faudra créer notre requetes sql ici
+     * cette requete ira interroger les BD en fontions des critères que l'on a inséré
+     */
 	$booleen="";
 	$critere1="";
 	$critere2="";
 	$troncature="";
+    if(val1 != "")
+    {
+        switch ($crit1){
+            case "tit1" :
+                $tables = " FROM notices";
+                $condition = " WHERE tit1 like '%$val1%' ";
+                break;
+            case "tit2" :
+                $tables = " FROM notices";
+                $condition = " WHERE tit2 like '%$val1%' ";
+                break;
+            default :
+                break;
+        }
+    }
+
+    /*
 	if ($bool1 == "ET") $booleen="@and ";
 	elseif ($bool1 == "OU") $booleen="@or ";
 	elseif ($bool1 == "SAUF") $booleen="@not ";
-
+	
 	switch ($crit1) {
 		case "titre" :
 			$critere1=$attr_titre;
@@ -143,20 +196,19 @@ while ($ligne=pmb_mysql_fetch_array($rq_bib_z3950)) {
 		default :
 			break;
 		}
-
-
+	
 	switch ($crit2) {
 		case "titre" :
 			$critere2=$attr_titre;
 			break;
 		case "mots" :
-			$critere2=$attr_mots;
+			$critere1=$attr_mots;
 			break;
 		case "resume" :
-			$critere2=$attr_resume;
+			$critere1=$attr_resume;
 			break;
 		case "type_doc" :
-			$critere2=$attr_type_doc;
+			$critere1=$attr_type_doc;
 			break;
 		case "auteur" :
 			$critere2=$attr_auteur;
@@ -194,14 +246,13 @@ while ($ligne=pmb_mysql_fetch_array($rq_bib_z3950)) {
 		}
 
 	$term="";
-
-
+	
 	if ($val1 != "" AND $val2 == "" AND $critere1 != "" ) {
 		$term="@attr 1=$critere1 @attr 4=1 \"$val1$troncature\" ";
-		}
+		} 
 	if ($val1 == "" AND $val2 != "" AND $critere2 != "" ) {
 		$term="@attr 1=$critere2 @attr 4=1 \"$val2$troncature\" ";
-		}
+		} 
 	if ($val1 != "" AND $val2 != "" AND $critere1 != "" AND $critere2 != "" ) {
 		$term="$booleen @attr 1=$critere1 @attr 4=1 \"$val1$troncature\"  @attr 1=$critere2 @attr 4=1 \"$val2$troncature\" ";
 		}
@@ -210,38 +261,130 @@ while ($ligne=pmb_mysql_fetch_array($rq_bib_z3950)) {
 		//$stato[$bib_id]=0;
 		//$map[$bib_id] = 0;
 		if ($val1 == "" AND $val2 == "") {
-			affiche_jsscript ($msg['z3950_echec_no_champ'], "z3950_failed", $bib_id);
+			affiche_jsscript ($msg[z3950_echec_no_champ], "#FF3333", $bib_id);
 		} else {
-			affiche_jsscript ($msg['z3950_echec_no_valid_attr'], "z3950_failed", $bib_id);
+			affiche_jsscript ($msg[z3950_echec_no_valid_attr], "#FF3333", $bib_id);
 		}
 	} else {
-
+        
 		//////////////////////////////////////////////////////////////////////////////////
 		// the query is ok we prepare the Z 3950 process for this biblio and
 		// save the $id to be able later to retrieve the records from the servers
 		//////////////////////////////////////////////////////////////////////////////////
-
+	
 		//$stato[$bib_id] = 1;
 		$auth = $auth_user.$auth_pass ;
 		if ($auth != "") {
-			$id = yaz_connect("$url:$port/$base", array("user" => $auth_user, "password" => $auth_pass, "piggyback"=>false)) or affiche_jsscript ($msg['z3950_echec_cnx'], "z3950_failed", $bib_id);
+			$id = yaz_connect("$url:$port/$base", array("user" => $auth_user, "password" => $auth_pass, "piggyback"=>false)) or affiche_jsscript ("Echec : impossible de se connecter au Serveur", "#FF3333", $bib_id);
 		} else {
-			$id = yaz_connect("$url:$port/$base", array("piggyback"=>false)) or affiche_jsscript ($msg['z3950_echec_cnx'], "z3950_failed", $bib_id);
+			$id = yaz_connect("$url:$port/$base", array("piggyback"=>false)) or affiche_jsscript ($msg[z3950_echec_cnx], "#FF3333", $bib_id);
 		}
 		$map[$bib_id] = $id;
 		yaz_element($id,"F");
-		$etrange_limite=$limite_notices;
-		yaz_range ($id, 1, $etrange_limite);
+		yaz_range ($id, 1, $limite);
 		yaz_syntax($id,strtolower($format));
 		echo $term;
 		yaz_search($id,"rpn",$term);
 	}
+     *
+     */
+
+    if(db_ludotech_connect($nameDB_ludotech, $user_ludotech, $pwd_ludotech, $ip_ludotech) == 0) {
+    
+    	affiche_jsscript ("Echec : impossible de se connecter au Serveur : ".mysql_error(), "#FF3333", $bib_id);
+    	$tab_ludotech_error[$ind] = 1;
+    }
+    else
+    {
+    	$sql_ludotech = "select count(*) as total ".$tables.$condition;
+    
+    	$query_ludotech = mysql_query($sql_ludotech) or ($tab_ludotech_error[$ind] = 1);
+    
+    
+    	if($tab_ludotech_error[$ind] != 1)
+    	{
+    		$ligne_ludotech = mysql_fetch_array($query_ludotech) or ($tab_ludotech_error[$ind] = 1);
+    		$tab_ludotech_count[$ind] = $ligne_ludotech["total"];
+    
+    		if($tab_ludotech_error[$ind] != 1)
+    		{
+    			$limite = 100;
+    			$sql_ludotech = "select tit1,tit2, notice_id, ed_name ".$tables." LEFT OUTER JOIN publishers ON ed1_id = ed_id".$condition."ORDER BY tit1 LIMIT 0,$limite";
+    
+    			$query_ludotech = mysql_query($sql_ludotech) or ($tab_ludotech_error[$ind] = 1);
+    			if($tab_ludotech_error[$ind] == 1)
+    				affiche_jsscript ("Echec : impossible d'ex&eacute;cuter la requ&ecirc;te ".mysql_error(), "#FF3333", $bib_id);
+    			$ind_ludotech = 0;
+    			while ($line_ludotech=mysql_fetch_array($query_ludotech)) {
+    				$ludotech_data[$bib_id][$ind_ludotech]["notice_id"] = $line_ludotech["notice_id"];
+    				$ludotech_data[$bib_id][$ind_ludotech]["ludotech_id"] = $bib_id;
+    				$ludotech_data[$bib_id][$ind_ludotech]["z_tit1"] = $line_ludotech["tit1"];
+    				$ludotech_data[$bib_id][$ind_ludotech]["z_tit2"] = $line_ludotech["tit2"];
+    				if(!empty ($line_ludotech["ed_name"]))
+    					$ludotech_data[$bib_id][$ind_ludotech]["publisher"] = $line_ludotech["ed_name"];
+    				else
+    					$ludotech_data[$bib_id][$ind_ludotech]["publisher"] = null;
+    
+    				$ind_ludotech++;
+    			}
+    		}
+    	}
+    
+    }
+    
+    db_ludotech_close();
+    
+    /* (mdarville)
+     * mettre dans un tableau dont l'indice principal serait la ludotech (permettra de faire le count par la suite)
+     * le tableau permettre d'insérer après dans la nouvelle table z_notice.
+    */
+    $ind++;
 }
+
+
+/* (mdarville)
+ * affichage de la zone "TERMINE ..." avec le nombre de cas repris et le nombre total.
+ * on skip cette affichage s'il y a déjà eu un affichage d'une erreur au préallable.
+ */
+$dbh = connection_mysql();
+$ind = 0;
+foreach ($tab_ludotech as $ludo_id) {
+	$hits = count($ludotech_data[$ludo_id]);
+	/* (mdarville)
+	 * insertion dans z_ludotech_notices des informations nécessaires pour
+	 * la construction du résumé.
+	*/
+	for($ind_ludotech = 0; $ind_ludotech < $hits; $ind_ludotech++)
+	{
+	if (!empty ($ludotech_data[$ludo_id][$ind_ludotech]["publisher"]))
+			$summary = $ludotech_data[$ludo_id][$ind_ludotech]["publisher"]. "  -  ".$tab_ludotech_name[$ind];
+			else
+				$summary = $tab_ludotech_name[$ind];
+				$z_notices_id = $ludotech_data[$ludo_id][$ind_ludotech]["notice_id"];
+				$z_tit1 = $ludotech_data[$ludo_id][$ind_ludotech]["z_tit1"];
+				$z_tit2 = $ludotech_data[$ludo_id][$ind_ludotech]["z_tit2"];
+
+				$sql_ludotech = "INSERT INTO z_ludotech_notices (id_ludotech, z_notices_id, summary, z_tit1, z_tit2,z_last_query) VALUES ('$ludo_id','$z_notices_id','".addslashes($summary)."','".addslashes($z_tit1)."','".addslashes($z_tit2)."','$last_query_id')";
+						$query_ludotech = mysql_query($sql_ludotech) or ($tab_ludotech_error[$ind] = 1);
+						if($tab_ludotech_error[$ind] == 1)
+							//affiche_jsscript ("Echec lors de l'insertion : ".mysql_error(), "#FF3333", $ludo_id);
+							affiche_jsscript ("Echec lors de l'insertion : ".mysql_error()."#FF3333", $ludo_id);
+
+    }
+    $msg1 = str_replace ("!!total!!", $hits, $msg[z3950_recup_fini]) ;
+    $msg1 = str_replace ("!!hits!!", $tab_ludotech_count[$ind], $msg1) ;
+    if($tab_ludotech_error[$ind] == 0)
+    	affiche_jsscript ($msg1, "#FFFFCC", $ludo_id);
+    	$ind++;
+
+}
+
 ///////////////////////////////////////////////////////////////////////////
 // Fase 2: all the possible connections are ready now start the researches
 //////////////////////////////////////////////////////////////////////////
 //Correction myst�rieuse : visiblement la fonction yaz_search impacte la variable global $limite... modifi� en $limite_notices
 
+/*
 affiche_jsscript ($msg['z3950_zmsg_wait'], "", $mioframe);
 
 $options=array("timeout"=>45);
@@ -257,10 +400,13 @@ $msgz=str_replace('!!time!!',$dt,$msg['z3950_zmsg_endw']);
 hideJoke();
 affiche_jsscript ($msgz, "", $mioframe);
 showButRes();
+*/
+
 ////////////////////////////////////////////////////////////////////
 // Fase 3: Now get the results from the biblios
 // obviously if the query was ok and there weren't errors
 ///////////////////////////////////////////////////////////////////
+/*
 while (list($bib_id,$id)=each($map)){
 		$error = yaz_error($id);
 		$error_info = yaz_addinfo($id);
@@ -346,11 +492,13 @@ while (list($bib_id,$id)=each($map)){
 			affiche_jsscript ($msg1, "z3950_succeed", $bib_id);
 		} // fin if else error
 }
-
+*/
+				
 $dt=time()-$t1;
 $msg1=str_replace('!!time!!',$dt,$msg['z3950_zmsg_show']);
 affiche_jsscript ($msg1, "", $mioframe);
-//showButRes();
+hideJoke();
+showButRes();
 ?>
 </body>
 </html>

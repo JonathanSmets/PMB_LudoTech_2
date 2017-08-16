@@ -43,13 +43,15 @@ function show_zbib($dbh)
 		<tr>
 		<th class='titre_data'>$msg[zbib_nom]</th>
 		<th class='titre_data'>$msg[zbib_base]</th>
-		<th class='titre_data'>$msg[zbib_utilisation]</th>
-		<th class='titre_data'>$msg[zbib_nb_attr]</th>
+		<!--<th class='titre_data'>$msg[zbib_utilisation]</th>
+		<th class='titre_data'>$msg[zbib_nb_attr]</th>-->
 		</tr>";
 
 	// affichage du tableau des z_bib
-	$requete = "SELECT bib_id, bib_nom, base, search_type, count(*) as nb_attr FROM z_bib left outer join z_attr on bib_id=attr_bib_id group by bib_id, bib_nom, base, search_type ORDER BY bib_nom, base, search_type ";
-	$res = pmb_mysql_query($requete, $dbh);
+	//$requete = "SELECT bib_id, bib_nom, base, search_type, count(*) as nb_attr FROM z_bib left outer join z_attr on bib_id=attr_bib_id group by bib_id, bib_nom, base, search_type ORDER BY bib_nom, base, search_type ";
+    // (mdarville) recherche dans nootre base de données les informations sur les ludotech enregistrées
+    $requete = 'SELECT id_ludotech, ip_ludotech, libelle_ludotech FROM z_ludotech ORDER BY libelle_Ludotech';
+    $res = pmb_mysql_query($requete, $dbh);
 
 	$nbr = pmb_mysql_num_rows($res);
 
@@ -62,12 +64,12 @@ function show_zbib($dbh)
 				$pair_impair = "odd";
 				}
 		$parity += 1;
-			$tr_javascript=" onmouseover=\"this.className='surbrillance'\" onmouseout=\"this.className='$pair_impair'\" onmousedown=\"document.location='./admin.php?categ=z3950&sub=zbib&action=modif&id=$row->bib_id';\" ";
+			$tr_javascript=" onmouseover=\"this.className='surbrillance'\" onmouseout=\"this.className='$pair_impair'\" onmousedown=\"document.location='./admin.php?categ=z3950&sub=zbib&action=modif&id=$row->id_ludotech';\" ";
 				print "<tr class='$pair_impair' $tr_javascript style='cursor: pointer'>";
-					print "<td><strong>".$row->bib_nom."</strong></td>";
-					print "<td>".$row->base."</td>";
-		print "<td>".$row->search_type."</td>";
-		print "<td>".$row->nb_attr."</td>";
+					print "<td><strong>".$row->libelle_ludotech."</strong></td>";
+					print "<td>".$row->ip_ludotech."</td>";
+		//print "<td>".$row->search_type."</td>";
+		//print "<td>".$row->nb_attr."</td>";
 		print "</tr>";
 		}
 	print "</table>
@@ -76,7 +78,7 @@ function show_zbib($dbh)
 		
 	}
 
-function zbib_form($znom="", $zbase="", $zsearch_type="CATALOG", $zurl="", $zport="211", $zformat="UNIMARC", $zuser="", $zpassword="", $zsutrs="",$zid=0, $zfunc='') {
+function zbib_form($znom="", $zbase="", $zsearch_type="CATALOG", $zurl="", $zport="211", $zid=0) {
 	global $msg;
 	global $admin_zbib_form;
 
@@ -90,13 +92,14 @@ function zbib_form($znom="", $zbase="", $zsearch_type="CATALOG", $zurl="", $zpor
 	$admin_zbib_form = str_replace('!!base!!',        $zbase,        $admin_zbib_form);
 	$admin_zbib_form = str_replace('!!search_type!!', $zsearch_type, $admin_zbib_form);
 	$admin_zbib_form = str_replace('!!url!!',         $zurl,         $admin_zbib_form);
-	$admin_zbib_form = str_replace('!!port!!',        $zport,        $admin_zbib_form);
-	$admin_zbib_form = str_replace('!!format!!',      $zformat,      $admin_zbib_form);
-	$admin_zbib_form = str_replace('!!user!!',        $zuser,        $admin_zbib_form);
-	$admin_zbib_form = str_replace('!!password!!',    $zpassword,    $admin_zbib_form);
-	$admin_zbib_form = str_replace('!!sutrs!!',  	  $zsutrs,       $admin_zbib_form);
-	$admin_zbib_form = str_replace('!!zfunc!!',  	  $zfunc,        $admin_zbib_form);
-	$admin_zbib_form = str_replace('!!nom_script!!',  	  addslashes($znom),        $admin_zbib_form);
+	$admin_zbib_form = str_replace('!!port!!',        "",        $admin_zbib_form);
+	$admin_zbib_form = str_replace('!!nomAddslashes!!',         addslashes($znom),         $admin_zbib_form);
+	//$admin_zbib_form = str_replace('!!format!!',      $zformat,      $admin_zbib_form);
+	//$admin_zbib_form = str_replace('!!user!!',        $zuser,        $admin_zbib_form);
+	//$admin_zbib_form = str_replace('!!password!!',    $zpassword,    $admin_zbib_form);
+	//$admin_zbib_form = str_replace('!!sutrs!!',  	  $zsutrs,       $admin_zbib_form);
+	//$admin_zbib_form = str_replace('!!zfunc!!',  	  $zfunc,        $admin_zbib_form);
+	//$admin_zbib_form = str_replace('!!nom_script!!',  	  addslashes($znom),        $admin_zbib_form);
 	
 	// added by Marco Vaninetti
 	print confirmation_delete("./admin.php?categ=z3950&sub=zbib&action=del&id=");
@@ -107,40 +110,53 @@ function zbib_form($znom="", $zbase="", $zsearch_type="CATALOG", $zurl="", $zpor
 switch($action) {
 	case 'update':
 	// no duplication
-	$requete = " SELECT count(1) FROM z_bib WHERE (bib_nom='$form_nom' AND bib_id!='$id' )  LIMIT 1 ";
+    /* (mdarville)
+     * Verification que l'information que l'on veut insérer n'existe pas déjà
+     * dans la base de données.
+     * Si elle existe --> update sinon insert.
+     * Normalement, on ne devrait jamais devoir faire d'insert ici.
+     */
+	$requete = " SELECT count(1) FROM z_ludotech WHERE (libelle_ludotech='$form_nom' AND id_ludotech!='$id' )  LIMIT 1 ";
 	$res = pmb_mysql_query($requete, $dbh);
 	$nbr = pmb_mysql_result($res, 0, 0);
 	if ($nbr > 0) {
 			error_form_message($form_nom.$msg["docs_label_already_used"]);
 	} else {
 		// O.k., now if the id already exist UPDATE else INSERT
-		if(!empty($form_nom) && !empty($form_base) && !empty($form_search_type) && !empty($form_url) && !empty($form_port) && !empty($form_format)) {
-			if($id) {
-				$requete = "UPDATE z_bib SET bib_nom='$form_nom', base='$form_base', 
-					search_type='$form_search_type', url='$form_url', port='$form_port', 
-					format='$form_format', auth_user='$form_user', 
-					auth_pass='$form_password', sutrs_lang='$form_sutrs', fichier_func='$form_zfunc' WHERE bib_id=$id ";
-				$res = pmb_mysql_query($requete, $dbh);
-			} else {
-				$requete = "INSERT INTO z_bib (bib_nom, search_type, url, port, base, format, auth_user, auth_pass, sutrs_lang, fichier_func) VALUES ('$form_nom', '$form_search_type', '$form_url', '$form_port', '$form_base', '$form_format', '$form_user', '$form_password', '$form_sutrs', '$form_zfunc') ";
-				$res = pmb_mysql_query($requete, $dbh);
-				$id_insert=pmb_mysql_insert_id();
-				$requete = "INSERT INTO z_attr (attr_bib_id,  attr_libelle, attr_attr) VALUES ('$id_insert', 'sujet', '21') ";
-				$res = pmb_mysql_query($requete, $dbh);
-				$requete = "INSERT INTO z_attr (attr_bib_id,  attr_libelle, attr_attr) VALUES ('$id_insert', 'auteur', '1003') ";
-				$res = pmb_mysql_query($requete, $dbh);
-				$requete = "INSERT INTO z_attr (attr_bib_id,  attr_libelle, attr_attr) VALUES ('$id_insert', 'isbn', '7') ";
-				$res = pmb_mysql_query($requete, $dbh);
-				$requete = "INSERT INTO z_attr (attr_bib_id,  attr_libelle, attr_attr) VALUES ('$id_insert', 'titre', '4') ";
-				$res = pmb_mysql_query($requete, $dbh);
+			if(!empty($form_nom) && !empty($form_base) && !empty($form_url) && !empty($form_user) && !empty($form_password)) {
+		        // rentre bien ici
+					if($id) {
+		                $requete = "UPDATE z_ludotech SET libelle_ludotech='$form_nom', nameDB_ludotech='$form_base',ip_ludotech='$form_url',user_ludotech='$form_user',pwd_ludotech='$form_password' WHERE id_ludotech=$id";
+						$res = mysql_query($requete, $dbh);
+					} else {
+						$requete = "INSERT INTO z_ludotech (libelle_ludotech, ip_ludotech, nameDB_ludotech, user_ludotech, pwd_ludotech) VALUES ('$form_nom', '$form_url', '$form_base', '$form_user', '$form_password') ";
+						$res = mysql_query($requete, $dbh);
+						$id_insert=mysql_insert_id();
+		            /*
+						$requete = "INSERT INTO z_attr (attr_bib_id,  attr_libelle, attr_attr) VALUES ('$id_insert', 'sujet', '21') ";
+						$res = mysql_query($requete, $dbh);
+		            */
+						$requete = "INSERT INTO z_attr (attr_bib_id,  attr_libelle, attr_attr) VALUES ('$id_insert', 'tit1', '1003') ";
+						$res = mysql_query($requete, $dbh);
+		             /*
+						$requete = "INSERT INTO z_attr (attr_bib_id,  attr_libelle, attr_attr) VALUES ('$id_insert', 'isbn', '7') ";
+						$res = mysql_query($requete, $dbh);
+		             */
+						$requete = "INSERT INTO z_attr (attr_bib_id,  attr_libelle, attr_attr) VALUES ('$id_insert', 'tit2', '4') ";
+						$res = mysql_query($requete, $dbh);
+		             
+					}
 				}
 			}
-		}
 		
 		show_zbib($dbh);
 		break;
 	case 'add':
-		if(empty($form_nom) || empty($form_base) || empty($form_search_type) || empty($form_url) || empty($form_port) || empty($form_format)) {
+		/* (mdarville)
+		 * Si une des zones de la forme (nom,nom de la base de données, url, user et password
+		 * n'est pas remplie, alors on affiche la forme.
+		 */
+		if(empty($form_nom) || empty($form_base) || empty($form_url) || empty($form_user) || empty($form_password)) {
 			zbib_form($form_nom, $form_base, $form_search_type, $form_url, $form_port, $form_format, $form_user, $form_password, $form_sutrs, $form_zfunc);
 		} else {
 			show_bib($dbh);
@@ -148,11 +164,15 @@ switch($action) {
 		break;
 	case 'modif':
 		if($id){
-			$requete = "SELECT bib_id, bib_nom, base, search_type, url, port, format, auth_user, auth_pass, sutrs_lang, fichier_func FROM z_bib WHERE bib_id=$id ";
-			$res = pmb_mysql_query($requete, $dbh);
-			if(pmb_mysql_num_rows($res)) {
-				$row=pmb_mysql_fetch_object($res);
-				zbib_form($row->bib_nom, $row->base, $row->search_type, $row->url, $row->port, $row->format, $row->auth_user, $row->auth_pass, $row->sutrs_lang, $id, $row->fichier_func);
+			//$requete = "SELECT bib_id, bib_nom, base, search_type, url, port, format, auth_user, auth_pass, sutrs_lang, fichier_func FROM z_bib WHERE bib_id=$id ";
+            /* (mdarville)
+             * Ici, on va rechercher les données que l'on va modifié et les insérer dans la form.
+             */
+            $requete = "SELECT id_ludotech, ip_ludotech, libelle_ludotech, nameDB_ludotech, user_ludotech, pwd_ludotech FROM z_ludotech WHERE id_ludotech=$id";
+			$res = mysql_query($requete, $dbh);
+			if(mysql_num_rows($res)) {
+				$row=mysql_fetch_object($res);
+                zbib_form($row->libelle_ludotech, $row->nameDB_ludotech, 'CATALOG', $row->ip_ludotech,  '', $id);                
 			} else {
 				show_zbib($dbh);
 			}
@@ -162,10 +182,13 @@ switch($action) {
 		break;
 	case 'del':
 		if($id) {
-			$requete = "DELETE FROM z_bib WHERE bib_id=$id ";
-			$res = pmb_mysql_query($requete, $dbh);
+            /* (mdarville).
+             * Suppression sur base de l'id.
+             */
+			$requete = "DELETE FROM z_ludotech WHERE id_ludotech=$id ";
+			$res = mysql_query($requete, $dbh);
 			$requete = "DELETE FROM z_attr WHERE attr_bib_id=$id ";
-			$res = pmb_mysql_query($requete, $dbh);
+			$res = mysql_query($requete, $dbh);
 			show_zbib($dbh);
 			} else show_zbib($dbh);
 		break;

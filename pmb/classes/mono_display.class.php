@@ -606,7 +606,7 @@ function do_isbd() {
 	// note de contenu
 	if($this->notice->n_contenu)
 		// $this->isbd .= "<br /><b>${msg[266]}</b>&nbsp;: ".nl2br(htmlentities($this->notice->n_contenu,ENT_QUOTES, $charset));
-		$this->isbd .= "<br /><b>${msg[266]}</b>&nbsp;: ".nl2br($this->notice->n_contenu);
+		// $this->isbd .= "<br /><b>${msg[266]}</b>&nbsp;: ".nl2br($this->notice->n_contenu); // TIPOS COCOF
 
 	// catégories
 	$categ_repetables = array() ;
@@ -748,6 +748,7 @@ function do_isbd() {
 		$this->isbd .= $index_concept->get_isbd_display();
 	}
 
+	/*
 	// langues
 	if(count($this->langues)) {
 		$langues = "<b>${msg[537]}</b>&nbsp;: ".construit_liste_langues($this->langues);
@@ -757,10 +758,13 @@ function do_isbd() {
 	}
 	if($langues)
 		$this->isbd .= "<br />$langues";
+		*/
 
 	// indexation libre
-	if($this->notice->index_l)
+	// TIPOS COCOF : novembre 2016  : pas d'affichage des mots clés
+	/*if($this->notice->index_l)
 		$this->isbd .= "<br /><b>${msg[324]}</b>&nbsp;: ".nl2br($this->notice->index_l);
+	*/
 
 	// indexation interne
 	if($this->notice->indexint) {
@@ -785,7 +789,13 @@ function do_isbd() {
 		for ($i=0; $i<count($perso_["FIELDS"]); $i++) {
 			$p=$perso_["FIELDS"][$i];
 			// ajout de && ($p['OPAC_SHOW']||$this->show_opac_hidden_fields) afin de masquer les champs masqués de l'OPAC en diff de bannette.
-			if ($p["AFF"] && ($p['OPAC_SHOW'] || $this->show_opac_hidden_fields)) $perso_aff .="<br />".$p["TITRE"]." ".nl2br($p["AFF"]);
+			if (isset($p['ID']) && ( $p['ID'] == 8 || $p['ID'] == 9 || $p['ID'] == 10 || $p['ID'] == 11  ) ) {
+			// TIPOS COCOF : novembre 2016  : Affichage Principe du jeu, analyse pédagogique, règle du jeu et contenu : ajouter un passage à la ligne pour que le texte soit aligné à gauche de la notice 
+				$br_cocof = "<br>"; 
+			} else {
+				$br_cocof = " ";
+			}
+			if ($p["AFF"] && ($p['OPAC_SHOW'] || $this->show_opac_hidden_fields)) $perso_aff .="<br />".$p["TITRE"].$br_cocof.nl2br($p["AFF"]);
 		}
 	}
 	if ($perso_aff) $this->isbd.=$perso_aff ;

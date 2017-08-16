@@ -15,30 +15,33 @@ $autorites_menu = "
 if (SESSrights & THESAURUS_AUTH) {
 	$autorites_menu .= "<li><a href='./autorites.php?categ=categories&sub=&parent=0&id=0'>$msg[134]</a></li>";
 }
-$autorites_menu .= "<li><a href='./autorites.php?categ=editeurs&sub=&id='>".$msg[135]."</a></li>
-	<li><a href='./autorites.php?categ=collections&sub=&id='>".$msg[136]."</a></li>
-	<li><a href='./autorites.php?categ=souscollections&sub=&id='>".$msg[137]."</a></li>
-	<li><a href='./autorites.php?categ=series&sub=&id='>".$msg[333]."</a></li>";
-if ($pmb_use_uniform_title) {
-	$autorites_menu .= "<li><a href='./autorites.php?categ=titres_uniformes&sub=&id='>".$msg['aut_menu_titre_uniforme']."</a></li>";
-}
-$autorites_menu .= "<li><a href='./autorites.php?categ=indexint&sub=&id='>".$msg['indexint_menu']."</a></li>";
+// *** LC 31/03/2016 *** //
+// $autorites_menu .= "<li><a href='./autorites.php?categ=editeurs&sub=&id='>".$msg[135]."</a></li>
+// 	<li><a href='./autorites.php?categ=collections&sub=&id='>".$msg[136]."</a></li>
+// 	<li><a href='./autorites.php?categ=souscollections&sub=&id='>".$msg[137]."</a></li>
+// 	<li><a href='./autorites.php?categ=series&sub=&id='>".$msg[333]."</a></li>";
+// if ($pmb_use_uniform_title) {
+// 	$autorites_menu .= "<li><a href='./autorites.php?categ=titres_uniformes&sub=&id='>".$msg['aut_menu_titre_uniforme']."</a></li>";
+// }
+// $autorites_menu .= "<li><a href='./autorites.php?categ=indexint&sub=&id='>".$msg['indexint_menu']."</a></li>";
+$autorites_menu .= "<li><a href='./autorites.php?categ=editeurs&sub=&id='>".$msg[135]."</a></li>";
 
-if($thesaurus_concepts_active == 1){
-	$autorites_menu .= "
-	<li><a href='./autorites.php?categ=concepts&sub=&id='>".$msg['ontology_skos_menu']."</a></li>";
-}
+// if($thesaurus_concepts_active == 1){
+// 	$autorites_menu .= "
+// 	<li><a href='./autorites.php?categ=concepts&sub=&id='>".$msg['ontology_skos_menu']."</a></li>";
+// }
 $autorites_menu .= "
 	!!authpersos!!
 </ul>";
-if (SESSrights & THESAURUS_AUTH) {
-	$autorites_menu .= "
-<h3 onclick='menuHide(this,event)'>".$msg['semantique']."</h3>
-<ul>
-	<li><a title='".$msg['word_syn_menu']."' href='./autorites.php?categ=semantique&sub=synonyms'>".$msg['word_syn_menu']."</a></li>
-	<li><a title='".$msg['empty_words_libelle']."' href='./autorites.php?categ=semantique&sub=empty_words'>".$msg['empty_words_libelle']."</a></li>
-</ul>";
-}
+// *** LC 31/03/2016 *** //
+// if (SESSrights & THESAURUS_AUTH) {
+// 	$autorites_menu .= "
+// <h3 onclick='menuHide(this,event)'>".$msg['semantique']."</h3>
+// <ul>
+// 	<li><a title='".$msg['word_syn_menu']."' href='./autorites.php?categ=semantique&sub=synonyms'>".$msg['word_syn_menu']."</a></li>
+// 	<li><a title='".$msg['empty_words_libelle']."' href='./autorites.php?categ=semantique&sub=empty_words'>".$msg['empty_words_libelle']."</a></li>
+// </ul>";
+// }
 $autorites_menu .= "
 <h3 onclick='menuHide(this,event)'>".$msg['authorities_gest']."</h3>
 <ul>

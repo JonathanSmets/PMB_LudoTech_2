@@ -222,8 +222,12 @@ class cashdesk  {
 		}
 		$all_filter = $transactype_filter.$encaissement_filter.$date_begin_filter.$date_end_filter;
 		
-		$requete="select *, SUM(montant)as cash from transactions, transactype where cashdesk_num=".$this->id." and transactype_num=transactype_id  $all_filter
+		// TIPOS COCOF : affichage de toutes les transactions meme si cashdesk_num = 0
+		$requete="select *, SUM(montant)as cash from transactions, transactype where ( cashdesk_num=".$this->id." or cashdesk_num=0 ) and transactype_num=transactype_id $all_filter
+		
 			group by transactype_num";
+		
+		// echo "<br>DEBUG : " . $requete . "<br>";
 		
 		$i=0;
 		$data=array();
@@ -236,24 +240,27 @@ class cashdesk  {
 				$data[$i]["montant"]=$row->cash;
 				$data[$i]["unit_price"]=$row->transactype_unit_price;				
 				
-				$req="select SUM(montant)as cash from transactions where cashdesk_num=".$this->id." and transactype_num=".$row->transactype_num." and realisee=0 $all_filter";				
+				$req="select SUM(montant)as cash from transactions where ( cashdesk_num=".$this->id." or cashdesk_num=0 ) and transactype_num=".$row->transactype_num." and realisee=0 $all_filter";				
 				$res_sum=pmb_mysql_query($req);
 				if($row_sum= pmb_mysql_fetch_object($res_sum))	$data[$i]["realisee_no"]=$row_sum->cash;
 				else $data[$i]["realisee_no"]="";
 				
-				$req="select SUM(montant)as cash from transactions where cashdesk_num=".$this->id." and transactype_num=".$row->transactype_num." and realisee=1 $all_filter";				
+				$req="select SUM(montant)as cash from transactions where ( cashdesk_num=".$this->id." or cashdesk_num=0 ) and transactype_num=".$row->transactype_num." and realisee=1 $all_filter";				
 				$res_sum=pmb_mysql_query($req);
 				if($row_sum= pmb_mysql_fetch_object($res_sum))	$data[$i]["realisee"]=$row_sum->cash;
 				else $data[$i]["realisee"]="";
 				
-				$req="select SUM(montant)as cash from transactions where cashdesk_num=".$this->id." and transactype_num=".$row->transactype_num." and encaissement=0 
-				and transacash_num=0 $all_filter";
+				$req="select SUM(montant)as cash from transactions where ( cashdesk_num=".$this->id." or cashdesk_num=0 ) and transactype_num=".$row->transactype_num." and encaissement=0 
+				$all_filter";
+				// and transacash_num=0 $all_filter";
 				$res_sum=pmb_mysql_query($req);
 				if($row_sum= pmb_mysql_fetch_object($res_sum))	$data[$i]["encaissement_no"]=$row_sum->cash;
 				else $data[$i]["encaissement_no"]="";
 				
-				$req="select SUM(montant)as cash from transactions where cashdesk_num=".$this->id." and transactype_num=".$row->transactype_num." 
-				and transacash_num>0 $all_filter";		
+				// TIPOS Cocof: add encaissement = 1
+				$req="select SUM(montant)as cash from transactions where ( cashdesk_num=".$this->id." or cashdesk_num=0 ) and transactype_num=".$row->transactype_num." and encaissement=1
+				$all_filter";
+				// and transacash_num>0 $all_filter";		
 				$res_sum=pmb_mysql_query($req);
 				if($row_sum= pmb_mysql_fetch_object($res_sum))	$data[$i]["encaissement"]=$row_sum->cash;
 				else $data[$i]["encaissement"]="";
@@ -272,7 +279,7 @@ class cashdesk  {
 			$compte["unit_price"]='';
 			$compte["realisee_no"]='';
 			//Validée
-			$requete="select SUM(montant)as cash from transactions,  comptes where cashdesk_num=".$this->id."
+			$requete="select SUM(montant)as cash from transactions,  comptes where ( cashdesk_num=".$this->id." or cashdesk_num=0 )
 			and encaissement=0 and type_compte_id=1 and id_compte =compte_id $all_filter
 			";
 			$res_sum=pmb_mysql_query($requete);
@@ -282,7 +289,7 @@ class cashdesk  {
 			}else $compte["encaissement_no"]="";
 			
 			//Ecaissé
-			$requete="select SUM(montant)as cash from transactions,  comptes where cashdesk_num=".$this->id."
+			$requete="select SUM(montant)as cash from transactions,  comptes where ( cashdesk_num=".$this->id." or cashdesk_num=0 )
 			and encaissement=1 and type_compte_id=1 and id_compte =compte_id $all_filter
 			";
 			$res_sum=pmb_mysql_query($requete);
@@ -305,7 +312,7 @@ class cashdesk  {
 			$compte["montant"]='';
 			$compte["unit_price"]='';
 			//Validée
-			$requete="select SUM(montant)as cash from transactions,  comptes where cashdesk_num=".$this->id." 
+			$requete="select SUM(montant)as cash from transactions,  comptes where ( cashdesk_num=".$this->id." or cashdesk_num=0 ) 
 			and encaissement=0 and type_compte_id=2 and id_compte =compte_id $all_filter
 			";
 			$res_sum=pmb_mysql_query($requete);
@@ -315,7 +322,7 @@ class cashdesk  {
 			}else $compte["encaissement_no"]="";
 			
 			//Ecaissé
-			$requete="select SUM(montant)as cash from transactions,  comptes where cashdesk_num=".$this->id."
+			$requete="select SUM(montant)as cash from transactions,  comptes where ( cashdesk_num=".$this->id." or cashdesk_num=0 )
 			and encaissement=1 and type_compte_id=2 and id_compte =compte_id $all_filter
 			";
 			$res_sum=pmb_mysql_query($requete);
@@ -338,7 +345,7 @@ class cashdesk  {
 			$compte["montant"]='';
 			$compte["unit_price"]='';
 			//Validée
-			$requete="select SUM(montant)as cash from transactions,  comptes where cashdesk_num=".$this->id." 
+			$requete="select SUM(montant)as cash from transactions,  comptes where ( cashdesk_num=".$this->id." or cashdesk_num=0 )
 			and encaissement=0 and type_compte_id=3 and id_compte =compte_id $all_filter
 			";
 			$res_sum=pmb_mysql_query($requete);
@@ -348,7 +355,7 @@ class cashdesk  {
 			}else $compte["encaissement_no"]="";
 			
 			//Ecaissé
-			$requete="select SUM(montant)as cash from transactions,  comptes where cashdesk_num=".$this->id."
+			$requete="select SUM(montant)as cash from transactions,  comptes where ( cashdesk_num=".$this->id." or cashdesk_num=0 )
 			and encaissement=1 and type_compte_id=3 and id_compte =compte_id $all_filter
 			";
 			$res_sum=pmb_mysql_query($requete);
@@ -363,6 +370,47 @@ class cashdesk  {
 			}		
 			
 		}
+		
+		// TIPOS Cocof: opérations spéciales
+		
+	
+		$aff_flag=0;
+	
+		$compte["id"]="cpt_4";
+		$compte["name"]="Opérations Spéciales";
+		$compte["montant"]='';
+		$compte["unit_price"]='';
+		//Validée --  
+		// transactype_num = 0  => pour uniquement les opérations spéciales et pas les transactions typées 
+		$requete="select SUM(montant)as cash from transactions,  comptes where ( cashdesk_num=".$this->id." or cashdesk_num=0 ) and transactype_num = 0 
+		and encaissement=0 and type_compte_id=4 and id_compte =compte_id $all_filter
+		";
+		$res_sum=pmb_mysql_query($requete);
+		if($row_sum= pmb_mysql_fetch_object($res_sum)){
+			if($row_sum->cash)$aff_flag=1;
+			$compte["encaissement_no"]=$row_sum->cash;
+		}else $compte["encaissement_no"]="";
+			
+		//Ecaissé
+		
+		// transactype_num = 0  => pour uniquement les opérations spéciales et pas les transactions typées
+		$requete="select SUM(montant)as cash from transactions,  comptes where ( cashdesk_num=".$this->id." or cashdesk_num=0 ) and transactype_num = 0 
+		and encaissement=1 and type_compte_id=4 and id_compte =compte_id $all_filter
+		";
+		$res_sum=pmb_mysql_query($requete);
+		if($row_sum= pmb_mysql_fetch_object($res_sum)){
+			if($row_sum->cash)$aff_flag=1;
+			$compte["encaissement"]=$row_sum->cash;
+		}else $compte["encaissement"]="";
+	
+		if($aff_flag){
+			$data[$i]=$compte;
+			$i++;
+		}
+			
+		
+			
+		
 		return $data;
 	}
 	

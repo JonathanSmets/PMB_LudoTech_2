@@ -25,6 +25,7 @@ $z3950_search_tpl= "
 		<div class='row'>
 			<blockquote>
 				!!crit1!! &nbsp; = &nbsp; <input id='val1' type='text' class='saisie-20em' name='val1' value='!!isbn!!'>
+				<!--
 				<blockquote>
 					<select name='bool1'>
 						<option value='ET'>$msg[z3950_bool_et]</option>
@@ -34,6 +35,7 @@ $z3950_search_tpl= "
 				</blockquote>
 				!!crit2!! &nbsp; = &nbsp; <input type='text' class='saisie-20em' name='val2' >
 			</blockquote>
+			-->
 		</div>
 		<br />
 		<div class='row'>

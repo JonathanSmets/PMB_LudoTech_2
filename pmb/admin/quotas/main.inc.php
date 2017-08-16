@@ -15,14 +15,18 @@ if ($sub) $qt=new quota($sub); else quota::parse_quotas();
 $admin_menu_quotas = "
 <h1>".$msg["admin_quotas"]." <span> !!menu_sous_rub!!</span></h1>\n
 <div class=\"hmenu\">";
-for ($i=0; $i<count($_quotas_types_); $i++) {	
-	if($pmb_pret_restriction_prolongation!=2 && $_quotas_types_[$i]['NAME']=='PROLONG_NMBR_QUOTA' ) continue;
-	if($pmb_pret_restriction_prolongation!=2 && $_quotas_types_[$i]['NAME']=='PROLONG_TIME_QUOTA') continue;
-	if(!$pmb_short_loan_management && (($_quotas_types_[$i]['NAME']=='SHORT_LOAN_TIME_QUOTA')||($_quotas_types_[$i]['NAME']=='SHORT_LOAN_NMBR_QUOTA'))) continue;
-	$admin_menu_quotas.="<span".ongletSelect("categ=quotas&sub=".$_quotas_types_[$i]["ID"])."><a href='./admin.php?categ=quotas&sub=".$_quotas_types_[$i]["ID"]."'>".$_quotas_types_[$i]["SHORT_COMMENT"]."</a></span>\n";
-	if ($sub==$_quotas_types_[$i]["ID"]) {
-		$menu_sous_rub=$_quotas_types_[$i]["SHORT_COMMENT"];
-		if ($elements) $menu_sous_rub.=" > ".$qt->get_title_by_elements_id($elements);
+for ($i=0; $i<count($_quotas_types_); $i++) {
+	// *** LC 31/03/2016 *** //
+	if ($_quotas_types_[$i]["ID"] != 16 && $_quotas_types_[$i]["ID"] != 32)
+	{
+		if($pmb_pret_restriction_prolongation!=2 && $_quotas_types_[$i]['NAME']=='PROLONG_NMBR_QUOTA' ) continue;
+		if($pmb_pret_restriction_prolongation!=2 && $_quotas_types_[$i]['NAME']=='PROLONG_TIME_QUOTA') continue;
+		if(!$pmb_short_loan_management && (($_quotas_types_[$i]['NAME']=='SHORT_LOAN_TIME_QUOTA')||($_quotas_types_[$i]['NAME']=='SHORT_LOAN_NMBR_QUOTA'))) continue;
+		$admin_menu_quotas.="<span".ongletSelect("categ=quotas&sub=".$_quotas_types_[$i]["ID"])."><a href='./admin.php?categ=quotas&sub=".$_quotas_types_[$i]["ID"]."'>".$_quotas_types_[$i]["SHORT_COMMENT"]."</a></span>\n";
+		if ($sub==$_quotas_types_[$i]["ID"]) {
+			$menu_sous_rub=$_quotas_types_[$i]["SHORT_COMMENT"];
+			if ($elements) $menu_sous_rub.=" > ".$qt->get_title_by_elements_id($elements);
+		}
 	}
 }
 $admin_menu_quotas.="

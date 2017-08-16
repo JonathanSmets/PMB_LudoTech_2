@@ -490,7 +490,7 @@ $printer_ticket_script
 <script type='text/javascript' src='./javascript/tablist.js'></script>
 <div id=\"el!!id!!Parent\" class=\"notice-parent\">
    		<h1><div class='left'><img src=\"./images/plus.gif\" class=\"img_plus\" name=\"imEx\" id=\"el!!id!!Img\" title=\"".$msg['admin_param_detail']."\" border=\"0\" onClick=\"expandBase('el!!id!!', true); return false;\">
-   		!!image_caddie_empr!! !!prenom!! !!nom!! <font size='2'>".$msg['empr_nb_pret'].": !!info_nb_pret!! ".$msg['empr_nb_resa'].": !!info_nb_resa!! !!info_resa_planning!! !!header_format!!</font></div><div class='right'><font size='2'>!!empr_resume!! !!empr_statut_libelle!!</font></div></h1>
+   		!!image_caddie_empr!! !!prenom!! !!nom!! <font size='2'>".$msg['empr_nb_pret'].": !!info_nb_pret!! ".$msg['empr_nb_resa'].": !!info_nb_resa!! !!info_resa_planning!! !!header_format!!</font>  - <strong>Numéro : </strong>!!cb!!</div><div class='right'><font size='2'>!!empr_resume!! !!empr_statut_libelle!! </font></div></h1>
    		</div>
 	<div class='row'><div class='right'>!!empr_picture!!</div></div>
 <div id=\"el!!id!!Child\" class=\"notice-child\" style=\"margin-left:7px;display:none;\"!!depliee!!>
@@ -554,9 +554,9 @@ $printer_ticket_script
 	<div class='row'>
 		<strong>$msg[59] : </strong>!!categ!!
 		</div>
-	<div class='row'>
+	<!-- <div class='row'>
 		<strong>$msg[38] : </strong>!!cb!!
-		</div>
+		</div> -->
 	</div>
 	!!abonnement!!
 <div class='colonne_suite'>
@@ -591,6 +591,7 @@ $empr_tmpl .= "
 	<div class='erreur'>!!empr_msg!!</div>
 </div>
 !!comptes!!
+!!comptesLudos!!
 !!relance!!
 <hr />
 <div class='row'>
@@ -1072,7 +1073,7 @@ if ($pmb_form_editables==1) {
 						<label class='etiquette' for='form_nom'>".$msg[67]."</label>
 					</div>
 					<div class='row'>
-						<input type='text' class='saisie-20em' style='width:99%' id='form_nom' name='form_nom' value='!!nom!!' />
+						<input type='text' class='saisie-20em' style='width:80%' id='form_nom' name='form_nom' value='!!nom!!' />
 					</div>
 				</div>
 				<!--   Prénom   -->
@@ -1476,7 +1477,7 @@ $empr_autre_compte_tmpl="
 	<script type='text/javascript'>
 		 function sel_type_transactype(transactype_id,obj,libelle, unit_price ){
 		 	document.getElementById('transactype_name').innerHTML=libelle;
-		 	if(unit_price>0){
+		 	if(unit_price>0 || unit_price<0){  /* TIPOS COCOF : negative transaction */
 		 		document.getElementById('transactype_unit_price').innerHTML='".$msg["transactype_finance_unit_price"]."' + unit_price;
 		 		document.getElementById('transactype_unit_price_val').value=unit_price;
 		 		document.getElementById('transactype_unit_price').style.display='block';

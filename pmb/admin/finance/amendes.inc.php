@@ -8,6 +8,26 @@ if (stristr($_SERVER['REQUEST_URI'], ".inc.php")) die("no access");
 
 //Gestion des amendes
 
+/* TIPOS & (mdarville)
+ * Recherche dans la table paramètres la période des amendes.
+ * Insertion de cette période dans le label.
+ * Obligation de le faire en début de la page amendes.inc.php pour mettre à jour le label dans le formulaire.
+ */
+
+/*$requete_periode = "select valeur_param from parametres where type_param = 'pmb' and  sstype_param = 'gestion_financiere_periode'";
+$resultat_periode = mysql_query($requete_periode);
+$ligne = mysql_fetch_object($resultat_periode);
+$nbperiode = $ligne->valeur_param;*/
+
+global $pmb_gestion_financiere_periode;
+ 
+if (isset($pmb_gestion_financiere_periode) && is_numeric($pmb_gestion_financiere_periode)  ) {
+	$nbperiode = $pmb_gestion_financiere_periode;
+}
+
+$msg["finance_amende_mnt"] = str_replace('!!nbperiode!!', $nbperiode, $msg["finance_amende_mnt"]);
+
+
 require_once("$include_path/templates/finance.tpl.php");
 require_once($class_path."/quotas.class.php");
 
@@ -17,7 +37,7 @@ function show_amende_parameters() {
 	global $finance_amende_jour,$finance_delai_avant_amende,$finance_delai_recouvrement,$finance_amende_maximum,$finance_delai_1_2,$finance_delai_2_3;
 	print "
 		<div class='row'>
-			<div class='colonne3' style='text-align:right;padding-right:10px'>".$msg["finance_amende_mnt"]."</div><div class='colonne3'>$finance_amende_jour</div><div class='colonne_suite'>&nbsp;</div>
+			<div class='colonne3' style='text-align:right;padding-right:10px'>".$msg["finance_amende_mnt"]."</div><div class='colonne3'>$finance_amende_jour </div><div class='colonne_suite'>&nbsp;</div>
 		</div>
 		<div class='row'>
 			<div class='colonne3' style='text-align:right;padding-right:10px'>".$msg["finance_amende_delai"]."</div><div class='colonne3'>$finance_delai_avant_amende</div><div class='colonne_suite'>&nbsp;</div>

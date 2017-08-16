@@ -13,8 +13,14 @@ $acces_m=1;
 if ($id_notice!=0 && $gestion_acces_active==1 && $gestion_acces_user_notice==1) {
 	require_once("$class_path/acces.class.php");
 	$ac= new acces();
-	$dom_1= $ac->setDomain(1);
-	$acces_m = $dom_1->getRights($PMBuserid,$id_notice,8);
+	$dom= $ac->setDomain(1);
+	$usr_prf = $dom->getCurrentUserProfile();
+	$pos = $dom->getUserPos($usr_prf);
+	$q = "select count(1) from acces_res_1 where res_num = $id_notice and ((ord(mid(res_rights, $pos ,1)) & 16)=16) ";
+	$r = mysql_query($q, $dbh);
+	if(mysql_result($r,0,0)==0) {
+		$acces_m=0;
+	}
 }
 
 if ($acces_m==0) {
@@ -30,6 +36,8 @@ if ($acces_m==0) {
 		$res_zquery=pmb_mysql_query($rqt,$dbh);
 		while ($ligne=pmb_mysql_fetch_array($res_zquery)) {
 			$zquery_id=$ligne["zquery_id"];
+			$rqt_notices = "delete from z_ludotech_notices where z_last_query ='".$zquery_id."' ";
+			$res=mysql_query($rqt_notices,$dbh);
 			$rqt_notices = "delete from z_notices where znotices_query_id ='".$zquery_id."' ";
 			$res=pmb_mysql_query($rqt_notices,$dbh);
 			$rqt_query = "delete from z_query where zquery_id ='".$zquery_id."' ";

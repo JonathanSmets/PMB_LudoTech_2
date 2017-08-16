@@ -154,6 +154,24 @@ class amende {
     function get_amende($id_expl) {
     	global $pmb_amende_comptabilisation;
     	
+    	/* TIPOS & (mdarville)
+    	 * Recherche  de la periode des amendes.
+    	 */
+    	/*$requete_periode = "select valeur_param from parametres where type_param = 'pmb' and  sstype_param = 'gestion_financiere_periode'";
+    	$resultat_periode = mysql_query($requete_periode);
+    	$ligne = mysql_fetch_object($resultat_periode);*/
+    	
+    	global $pmb_gestion_financiere_periode;
+    	
+    	if (isset($pmb_gestion_financiere_periode) && is_numeric($pmb_gestion_financiere_periode)  ) {
+    		$modulo_periode = $pmb_gestion_financiere_periode;
+    	} 
+    	
+    	if(!ereg("^[0-9]*$",$modulo_periode) || $modulo_periode < 1){
+    		die(print "<font color=red>Erreur avec la gestion financi&egrave;re des p&eacute;riodes.<br> La variable gestion_financiere_periode dans les param&egrave;tres n'est pas un num&eacute;rique entier sup&eacute;rieur &agrave; 0(\"$modulo_periode\").<br> Veuillez effectuer les modifications requises pour afficher ce module.</font>");
+    		$modulo_periode = 1;
+    	}
+    	
     	$requete="select pret_date, pret_retour, niveau_relance, date_relance from pret where pret_idexpl=$id_expl";
      	$resultat=pmb_mysql_query($requete);
     	$amende=array();
@@ -167,6 +185,28 @@ class amende {
 	    	//$calendar=new calendar();	
  		   	$njours=calendar::get_open_days($dr[2],$dr[1],$dr[0],date("d"),date("m"),date("Y"));
  		   	$amende_param=$this->get_parameters($id_expl);
+ 		   	
+ 		   	/* TIPOS && (mdarville)
+ 		   	 * Gestion de la période.
+ 		   	 * Utilisation de la variable $modulo_periode pour recalculer le njours afin de le transformer en nombre de periode
+ 		   	 * On divise njours par $modulo_periode et après on fait un modulo avec ces mêmes variables pour determiner si une nouvelle periode
+ 		   	 * a déjà été entamée.
+ 		   	 */
+ 		   	
+ 		   	if($njours > 0) {
+ 		   		if($modulo_periode != 1){
+ 		   			$nbperiode = intval($njours / $modulo_periode);
+ 		   	
+ 		   			if($njours % $modulo_periode != 0){
+ 		   				$nbperiode++;
+ 		   			}
+ 		   			/* (mdarville)
+ 		   			 * remplacement du nombre de jours par le nombre de périodes.
+ 		   			 */
+ 		   			$njours = $nbperiode;
+ 		   		}
+ 		   	}
+ 		   	
  		   	if ($njours>0) {
  		   		$amende["njours"]=$njours;
 	 		   	if ($njours>$amende_param["delai_avant_amende"]) {

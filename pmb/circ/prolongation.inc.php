@@ -87,6 +87,84 @@ function prolonger($id_prolong) {
 			if ($prolongation==TRUE) {
 				$query = "update pret set cpt_prolongation='".$cpt_prolongation."' where pret_idexpl=".$id_prolong." limit 1";
 				pmb_mysql_query($query, $dbh);
+				
+				global $pmb_gestion_financiere, $pmb_gestion_amende;
+				
+				// TIPOS COCOF
+				// prise en compte de l'amende en cours en cas de retard
+				if (($pmb_gestion_financiere) && ($pmb_gestion_amende)) {
+					$amende=new amende($id_empr);
+					$amende_t=$amende->get_amende($id_prolong);
+					//Si il y a une amende, je la débite
+					if ($amende_t["valeur"]) {
+						print pmb_bidi("<br /><div class='erreur'>".$msg["finance_retour_amende"]."&nbsp;: ".comptes::format($amende_t["valeur"]));
+						$alert_sound_list[]="critique";
+						$compte_id=comptes::get_compte_id_from_empr($id_empr,2);
+						if ($compte_id) {
+							$cpte=new comptes($compte_id);
+							if ($cpte->id_compte) {
+								$cpte->record_transaction("",$amende_t["valeur"],-1,sprintf("Amende prolongation exemplaire %s",$id_prolong),0);
+								print " ". "Prolongation : " . $msg["finance_retour_amende_recorded"];
+							}
+						}
+						print "</div>";
+					}
+				}
+				
+				// TIPOS COCOF
+				// prise en compte d'un coût de prêt lors d'une prolongation
+				
+				global $pmb_allow_extend_fee;
+				global $pmb_gestion_tarif_prets;
+				global $include_path,$lang;
+				
+				if ( ($pmb_gestion_financiere)&&($pmb_gestion_tarif_prets) && ($pmb_allow_extend_fee) ) {
+					$tarif_pret=0;
+					switch ($pmb_gestion_tarif_prets) {
+						case 1:
+							//Gestion simple
+							$query = "SELECT tarif_pret";
+							$query.= " FROM exemplaires, docs_type";
+							$query.= " WHERE expl_id='".$id_prolong;
+							$query.= "' and idtyp_doc=expl_typdoc LIMIT 1";
+				
+							$result = @ pmb_mysql_query($query, $dbh) or die("can't SELECT exemplaires ".$query);
+							$expl_tarif = pmb_mysql_fetch_object($result);
+							$tarif_pret = $expl_tarif -> tarif_pret;
+				
+							break;
+						case 2:
+							//Gestion avancée
+							//Initialisation Quotas
+							global $_parsed_quotas_;
+							$_parsed_quotas_=false;
+							$qt_tarif=new quota("COST_LEND_QUOTA","$include_path/quotas/own/$lang/finances.xml");
+							$struct["READER"]=$id_empr;
+							$struct["EXPL"]=$id_prolong;
+							$tarif_pret=$qt_tarif->get_quota_value($struct);
+							break;
+					}
+					$tarif_pret=$tarif_pret*1;
+					if ($tarif_pret) {
+						$compte_id=comptes::get_compte_id_from_empr($id_empr,3);
+						if ($compte_id) {
+							$cpte=new comptes($compte_id);
+							$explaire = new exemplaire('',$id_prolong);
+				
+							if($explaire->id_notice == 0 && $explaire->id_bulletin){
+								//C'est un exemplaire de bulletin
+								$bulletin = new bulletinage_display($explaire->id_bulletin);
+								$titre = strip_tags($bulletin->display);
+							} elseif($explaire->id_notice) {
+								$notice = new mono_display($explaire->id_notice);
+								$titre = strip_tags($notice->header);
+							}
+							$libelle_expl = (strlen($titre)>15)?$explaire->cb." ".$titre:$explaire->cb." ".$titre;
+							$cpte->record_transaction("",abs($tarif_pret),-1,sprintf("Prolongation exemplaire %s",$libelle_expl),0);
+						}
+					}
+				}
+				// END TIPOS COCOF : prolongation payante
 						
 				// mettre ici la routine de prolongation
 				$pretProlong = new pret ($id_empr, $id_prolong, $form_cb, "", "");

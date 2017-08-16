@@ -23,6 +23,7 @@ require_once("z3950_func.inc.php");
 
 print "
 <div id='contenu-frame'>
+<h1>$msg[z3950_progr_rech]</h1>
 <!--
 <br /><p align='center'>$msg[z3950_progr_rech_txt]</p>
 -->
@@ -37,11 +38,11 @@ print "
 // On détermine les Bibliothèques sélectionnées
 //
 
-$recherche=pmb_mysql_query("SELECT * FROM z_bib $selection_bib ORDER BY bib_nom");
+$recherche=mysql_query("select * from z_ludotech $selection_bib");
 $parity = 1;
 while ($resultat=pmb_mysql_fetch_array($recherche)) {
-	$bib_id=$resultat["bib_id"];
-	$nom_bib=$resultat["bib_nom"];
+	$bib_id=$resultat["id_ludotech"];
+	$nom_bib=$resultat["libelle_ludotech"];
 	if ($parity % 2) {
 		$pair_impair = "even";
 		} else {

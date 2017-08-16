@@ -34,6 +34,9 @@ if ($dest=="TABLEAU") {
 		
 		$prolongation = TRUE;
 		
+		// TIPOS cocof: ne pas prolonger les prets en retard 
+		$retard_prolongation = FALSE;
+		
 		//on recupere les informations du pret 
 		$query = "select cpt_prolongation, pret_date, pret_retour, expl_location from pret, exemplaires";
 		$query .= " where pret_idexpl=expl_id";
@@ -302,9 +305,17 @@ if ($nb_elements) {
 					$resultatdate = pmb_mysql_query($rqt_date);
 					$res = pmb_mysql_fetch_object($resultatdate) ;
 					$aff_date_prolongation= $res->aff_date_prolongation;
-					// Bouton de prolongation
-					if (sql_value("SELECT DATEDIFF('$date_retour','$date_prolongation')") == 0) {
-						$prolongation=false;
+					
+					// TIPOS COCOF : ne pas prolonger les prêts en retard
+					if ($data['retard']) {
+						$prolongation = false;
+						$retard_prolongation = true;					
+					} else {
+					// END TIPOS
+						// Bouton de prolongation
+						if (sql_value("SELECT DATEDIFF('$date_retour','$date_prolongation')") == 0) {
+							$prolongation=false;
+						}
 					}
 				}
 				
@@ -312,7 +323,13 @@ if ($nb_elements) {
 				if ($prolongation) {
 					echo "<td><center><a href='./empr.php?prolongation=$aff_date_prolongation&prolonge_id=$expl_id&tab=loan_reza&lvl=$lvl#empr-loan' $js >$aff_date_prolongation</a></center></td>";
 				} else {
-					echo "<td style='cursor: default' $js ><center>&nbsp;</center></td>";
+					// TIPOS COCOF : ne pas prolonger les prêts en retard
+					if ($retard_prolongation) {
+						echo "<td style='cursor: default' $js ><center>En retard</center></td>";
+					} else {
+					// END TIPOS
+						echo "<td style='cursor: default' $js ><center>&nbsp;</center></td>";
+					}
 				}
 		
 			} // fin if prolongeable	

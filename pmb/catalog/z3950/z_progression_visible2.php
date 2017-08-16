@@ -34,17 +34,13 @@ $_SERVER[HTTP_USER_AGENT]
 			<div class='left'>
 				$msg[z3950_trier_par]
 				<select name='tri1'>
-					<option value='auteur' selected>$msg[z3950_auteur]</option>
-					<option value='isbn'>$msg[z3950_isbn]</option>
-					<option value='bib_nom'>$msg[z3950_serveur]</option>
-					<option value='titre'>$msg[z3950_titre]</option>
+					<option value='z_tit1' selected>$msg[z3950_tit1]</option>
+					<option value='z_tit2'>$msg[z3950_tit2]</option>
 				</select>
 				$msg[z3950_tri_suite]
 				<select name='tri2'>
-					<option value='auteur' selected>$msg[z3950_auteur]</option>
-					<option value='isbn'>$msg[z3950_isbn]</option>
-					<option value='bib_nom'>$msg[z3950_serveur]</option>
-					<option value='titre'>$msg[z3950_titre]</option>
+					<option value='z_tit1' selected>$msg[z3950_tit1]</option>
+					<option value='z_tit2'>$msg[z3950_tit2]</option>
 				</select>
 				<input type='submit' name='submit' class='bouton' value='$msg[z3950_results]'>
 			</div>

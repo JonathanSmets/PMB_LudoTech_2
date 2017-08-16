@@ -455,7 +455,8 @@ function expl_retard($cb_doc, $x, $y, $largeur, $retrait, $link) {
 	$ourPDF->setFont($pmb_pdf_font, 'I', 8);
 	$ourPDF->multiCell(($largeur - $retrait), 8, strip_tags($expl->location_libelle.": ".$expl->section_libelle.", ".$expl->expl_cote." (".$expl->expl_cb.")"), 0, 'L', 0);
 
-	if (($pmb_gestion_financiere)&&($pmb_gestion_amende)) {
+	global $pdflettreretard_view_letter_penalties; 
+	if (($pmb_gestion_financiere)&&($pmb_gestion_amende) && ($pdflettreretard_view_letter_penalties)) { // TIPOS COCOF : imprimer amendes uniquement si parametre à 1 (novembre 2016)
 		$amende=new amende($expl->pret_idempr);
 		$amd=$amende->get_amende($expl->expl_id);
 		if ($amd["valeur"]) {
@@ -513,6 +514,8 @@ function lettre_retard_par_lecteur($id_empr) {
 	global $marge_page_gauche, $marge_page_droite, $largeur_page, $fdp, $after_list, $limite_after_list, $before_list, $madame_monsieur, $nb_1ere_page, $nb_par_page, $taille_bloc_expl, $debut_expl_1er_page, $debut_expl_page, $before_recouvrement,$after_recouvrement;
 	global $pmb_afficher_numero_lecteur_lettres;
 	global $pmb_hide_biblioinfo_letter;
+	
+	global $pdflettreretard_view_letter_penalties;
 
 	//Pour les amendes
 	$valeur=0;
@@ -556,7 +559,7 @@ function lettre_retard_par_lecteur($id_empr) {
 			}
 			$valeur+=expl_retard ($data['expl_cb'],$marge_page_gauche,$pos_page,($largeur_page - $marge_page_droite - $marge_page_gauche), 10,$dbh);
 		}
-		print_amendes($valeur,$frais_relance);
+		if ($pdflettreretard_view_letter_penalties) print_amendes($valeur,$frais_relance); // TIPOS COCOF : imprimer amendes uniquement si parametre à 1 (novembre 2016)
 
 		$ourPDF->SetX ($marge_page_gauche);
 		$ourPDF->setFont($pmb_pdf_font, '', 10);
@@ -600,7 +603,7 @@ function lettre_retard_par_lecteur($id_empr) {
 					$valeur+=expl_retard ($cb_expl,$marge_page_gauche,$pos_page,($largeur_page - $marge_page_droite - $marge_page_gauche), 10,$dbh);
 				}
 			}
-			print_amendes($valeur,$frais_relance);
+			if ($pdflettreretard_view_letter_penalties) print_amendes($valeur,$frais_relance); // TIPOS COCOF : imprimer amendes uniquement si parametre à 1 (novembre 2016)
 
 		} else {
 			// il n'y a que des retards niveau 3
@@ -613,7 +616,7 @@ function lettre_retard_par_lecteur($id_empr) {
 					$valeur+=expl_retard ($cb_expl,$marge_page_gauche,$pos_page,($largeur_page - $marge_page_droite - $marge_page_gauche), 10,$dbh);
 				}
 			}
-			print_amendes($valeur,$frais_relance);
+			if ($pdflettreretard_view_letter_penalties) print_amendes($valeur,$frais_relance);// TIPOS COCOF : imprimer amendes uniquement si parametre à 1 (novembre 2016)
 			$ourPDF->setFont($pmb_pdf_font, '', 10);
 			$ourPDF->multiCell(($largeur_page - $marge_page_droite - $marge_page_gauche), 5, $after_recouvrement, 0, 'J', 0);
 		}

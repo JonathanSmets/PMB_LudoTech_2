@@ -196,8 +196,11 @@ pt_register ("SERVER", "REMOTE_ADDR","HTTP_USER_AGENT", "PHP_SELF", "REQUEST_URI
 if (strstr($REQUEST_URI,"catalog.php") && $categ == 'z3950' && $action == 'search') {
 	$expiration = time() + 30000000; 
 	setcookie ('PMB-Z3950-criterion1', $crit1, $expiration);
+	/*
 	setcookie ('PMB-Z3950-criterion2', $crit2, $expiration);
 	setcookie ('PMB-Z3950-boolean', $bool1, $expiration);
+	*
+	*/
 	if ($clause=="") {
 		for ($i=0; $i<count($bibli); $i++) {
 			if ($clause=="") $clause.=$bibli[$i];

@@ -267,13 +267,14 @@ $rfid_script_catalog
 			!!type_doc!!
 			</div>
 		</div>
-	<div class='colonne3'>
+		<!-- LC 31/03/2016 -->
+	<!--<div class='colonne3'>-->
 		<!-- Nombre de parties -->
-		<label class='etiquette' for='f_ex_nbparts'>".$msg["expl_nbparts"]."</label>
-		<div class='row'>
-			<input type='text' class='saisie-5em' id=\"f_ex_nbparts\" value='!!nbparts!!' name='f_ex_nbparts' />
-			</div>
-		</div>
+		<!--<label class='etiquette' for='f_ex_nbparts'>".$msg["expl_nbparts"]."</label>-->
+		<!--<div class='row'>-->
+			<!--<input type='text' class='saisie-5em' id=\"f_ex_nbparts\" value='!!nbparts!!' name='f_ex_nbparts' />-->
+			<!--</div>-->
+		<!--</div>-->
 	</div>
 <div class='row'>
 	<div class='colonne3'>

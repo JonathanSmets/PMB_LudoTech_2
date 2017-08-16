@@ -22,6 +22,9 @@ require ("notice.inc.php");
 include("$class_path/expl.class.php");
 include("$include_path/templates/expl.tpl.php");
 
+//$modele utilisée dans la classe z3950_notice
+include ("$class_path/z3950_notice.class.php");
+
 if ($notice_org) {
 	$requete="select z_marc,fichier_func from z_notices, z_bib where znotices_id='".$notice_org."' and znotices_bib_id=bib_id";
 	$resultat=pmb_mysql_query($requete);
@@ -29,8 +32,15 @@ if ($notice_org) {
 	$modele=@pmb_mysql_result($resultat,0,1);
 }
 
-//$modele utilisée dans la classe z3950_notice
-include ("$class_path/z3950_notice.class.php");
+if (!$modele) {
+	if ($z3950_import_modele) {
+		require_once($base_path."/catalog/z3950/".$z3950_import_modele);
+	} else {
+		require_once("func_other.inc.php");
+	}
+} else {
+	require_once($base_path."/catalog/z3950/".$modele);
+}
 
 if (!$id_notice) {
 	print "<h1>$msg[z3950_integr_catal]</h1>";

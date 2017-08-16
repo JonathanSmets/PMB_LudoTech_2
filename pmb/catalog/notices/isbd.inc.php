@@ -58,13 +58,14 @@ if ($acces_l==0) {
 	$boutons .= "<input type='button' class='bouton' value='$msg[158]' onclick='document.location=\"./catalog.php?categ=remplace&id=".$id."\"' />&nbsp;";
 	if ($z3950_accessible) 
 		$boutons .= "<input type='button' class='bouton' value='$msg[notice_z3950_update_bouton]' onclick='document.location=\"./catalog.php?categ=z3950&id_notice=".$id."&isbn=".$isbd->isbn."\"' />&nbsp;";
-	if ($pmb_allow_external_search)
-		$boutons .= "<input type='button' class='bouton' value='$msg[notice_replace_external]' onclick='document.location=\"./catalog.php?categ=search&mode=7&external_type=simple&notice_id=".$id."&from_mode=0&code=".$isbd->isbn."\"' />&nbsp;";
-	if ($pmb_allow_external_search)
-		$boutons .= "<input type='button' class='bouton' value='".$msg["harvest_notice_replace"]."' onclick='document.location=\"./catalog.php?categ=harvest&notice_id=".$id."\"' />&nbsp;";
+	// *** LC 31/03/2016 *** //
+// 	if ($pmb_allow_external_search)
+// 		$boutons .= "<input type='button' class='bouton' value='$msg[notice_replace_external]' onclick='document.location=\"./catalog.php?categ=search&mode=7&external_type=simple&notice_id=".$id."&from_mode=0&code=".$isbd->isbn."\"' />&nbsp;";
+// 	if ($pmb_allow_external_search)
+// 		$boutons .= "<input type='button' class='bouton' value='".$msg["harvest_notice_replace"]."' onclick='document.location=\"./catalog.php?categ=harvest&notice_id=".$id."\"' />&nbsp;";
 		
 	$boutons .= "<input type='button' class='bouton' value='$msg[notice_duplicate_bouton]' onclick='document.location=\"./catalog.php?categ=duplicate&id=".$id."\"' />&nbsp;";
-	$boutons .= "<input type='button' class='bouton' value='$msg[notice_child_bouton]' onclick='document.location=\"./catalog.php?categ=create_form&id=0&notice_parent=".$id."\"' />&nbsp;";
+// 	$boutons .= "<input type='button' class='bouton' value='$msg[notice_child_bouton]' onclick='document.location=\"./catalog.php?categ=create_form&id=0&notice_parent=".$id."\"' />&nbsp;";
 	if($acquisition_active) {
 		$boutons .= "<input type='button' class='bouton' value='".$msg["acquisition_sug_do"]."' onclick='document.location=\"./catalog.php?categ=sug&action=modif&id_bibli=0&id_notice=".$id."\"' />";
 	}

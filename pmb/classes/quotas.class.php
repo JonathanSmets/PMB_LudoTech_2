@@ -91,6 +91,22 @@ class quota {
 			$_quotas_elements_[]=$elt;
 		}
 		
+		/* TIPOS & (mdarville)
+		 * Récupération du nombre de jour constituant une période d'amende.
+		 */
+		
+		/*$requete_periode = "select valeur_param from parametres where type_param = 'pmb' and  sstype_param = 'gestion_financiere_periode'";
+		$resultat_periode = mysql_query($requete_periode);
+		$ligne = mysql_fetch_object($resultat_periode);
+		$nbperiode = $ligne->valeur_param;
+		*/
+		
+		global $pmb_gestion_financiere_periode;
+		
+		if (isset($pmb_gestion_financiere_periode) && is_numeric($pmb_gestion_financiere_periode)  ) {
+			$nbperiode = $pmb_gestion_financiere_periode;
+		}
+				
 		//Récupération des types
 		$_quotas_types_=array();
 		
@@ -136,6 +152,11 @@ class quota {
 			
 			define($typ["NAME"],$typ["ID"]);
 			$_quotas_types_[]=$typ;
+			
+			/* TIPOS Ludos */
+			if($_quotas_types_[$i]["ID"] == '2'){
+				$_quotas_types_[$i]["SHORT_COMMENT"] = str_replace('!!nbperiode!!', $nbperiode, $_quotas_types_[$i]["SHORT_COMMENT"]);
+			}
 		}
 		
 		$_parsed_quotas_=1;
