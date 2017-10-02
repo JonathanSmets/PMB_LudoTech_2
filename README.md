@@ -10,7 +10,7 @@ La plus	 notable   étant la création de la   base de données  qui n'est plus 
 
 https://github.com/cocof-cirb/docker-pmb-ludotech-distribution-internet/tree/master/resources/db/dump
 
-Consultez aussi notre image Docker correspondantes, c'est notre seule documentation à l'heure actuelle: 
+Consultez aussi notre image Docker correspondante, c'est notre seule documentation à l'heure actuelle: 
 https://github.com/cocof-cirb/docker-pmb-ludotech-distribution-internet
 
 Et... amusez-vous bien.
