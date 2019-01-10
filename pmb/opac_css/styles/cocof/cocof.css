@@ -1039,6 +1039,15 @@ iframe#iframe_resume_panier {
 .subsform {
 	width:200px;
 }
+#location-container table td{
+     	width: 130px;
+  	display: inline-block;
+}
+
+#location-container table td a b{
+     	overflow: hidden;
+  	text-overflow: ellipsis;
+}
 
 #websubscribe .erreur {
 	color: #FF0000 ;
