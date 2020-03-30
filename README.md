@@ -1,8 +1,8 @@
 # Petites & Moyennes Ludothèques (PML)
 Ce logiciel de gestion de ludothèques offre notamment les fonctionnalités suivantes :
-- gestion des notices, avec partage via Z39.50
-- gestion des exemplaires
-- gestion des emprunteurs
+- gestion du fond (exemplaires, notices, partage via Z39.50)
+- gestion de la circulation (emprunteurs, prêts, réservations, retards,...)
+- statistiques (états, requêtes personnalisables)
 - catalogue en ligne
 
 # Architecture
