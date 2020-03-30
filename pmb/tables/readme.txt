@@ -1,84 +1,71 @@
 ------------------------------------------------------------------------------------------------------------------
 
 Description des fichiers
-bibli.sql : structure de la base de données uniquement, pas de données
+bibli.sql : structure de la base de donnÃ©es uniquement, pas de donnÃ©es
 		*************************************
-		Méthode de céation de ce fichier :
-				créer le contenu du fichier bibli.sql : mysqldump -u bibli -pbibli -d --quote-names=FALSE --skip-add-drop-table bibli > bibli.sql
-				penser à conserver la ligne de commentaire originale du fichier bibli.sql afin de conserver la version CVS du fichier
+		MÃ©thode de cÃ©ation de ce fichier :
+				crÃ©er le contenu du fichier bibli.sql : mysqldump -u bibli -pbibli -d --quote-names=FALSE --skip-add-drop-table bibli > bibli.sql
+				penser Ã  conserver la ligne de commentaire originale du fichier bibli.sql afin de conserver la version CVS du fichier
 		*************************************
 
-minimum.sql : utilisateur admin/admin, paramètres de l'application
+minimum.sql : utilisateur admin/admin, paramÃ¨tres de l'application
 
 feed_essential.sql : ce dont vous avez besoin pour utiliser l'application en mode quick-start :
-	Données de l'application préremplies, modifiables.
-	Un jeu de sauvegarde prêt à l'emploi
-	Un jeu de paramétrage de Z3950.
+	DonnÃ©es de l'application prÃ©remplies, modifiables.
+	Un jeu de sauvegarde prÃªt Ã  l'emploi
+	Un jeu de paramÃ©trage de Z3950.
 	
-data_test.sql : une petite sélection de données de notices, lecteurs, afin de pouvoir tester de suite PMB.
-	Notices, lecteurs, prêteurs, exemplaires, périodiques
-	Se base sur les données de l'application fournies dans feed_essential.sql
-	Doit charger le thésaurus UNESCO_FR unesco_fr.sql
+data_test.sql : une petite sÃ©lection de donnÃ©es de notices, lecteurs, afin de pouvoir tester de suite PMB.
+	Notices, lecteurs, prÃªteurs, exemplaires, pÃ©riodiques
+	Se base sur les donnÃ©es de l'application fournies dans feed_essential.sql
+	Doit charger le thÃ©saurus UNESCO_FR unesco_fr.sql
 	
-Thésaurus : 3 thésaurus vous sont proposés :
-	unesco.sql : thésaurus hiérarchisé de l'UNESCO, assez important et bien fait.
+ThÃ©saurus : 3 thÃ©saurus vous sont proposÃ©s :
+	unesco.sql : thÃ©saurus hiÃ©rarchisÃ© de l'UNESCO, assez important et bien fait.
 	agneaux.sql : plus petit, plus simple mais bien fait aussi.
-	environnement : un thésaurus possible pour un fonds documentaire axé Environnement.
+	environnement : un thÃ©saurus possible pour un fonds documentaire axÃ© Environnement.
 	
-Indexations internes : 4 indexations sont proposées :
-	indexint_100.sql : 100 cases du savoir ou marguerite des couleurs, indexation décimale 
-	style Dewey simplifiée pour l'éducation
-	indexint_chambery.sql : indexation style Dewey de la BM de Chambéry, très bien conçue
-	mais peu adaptée à des petites bibliothèques
+Indexations internes : 4 indexations sont proposÃ©es :
+	indexint_100.sql : 100 cases du savoir ou marguerite des couleurs, indexation dÃ©cimale 
+	style Dewey simplifiÃ©e pour l'Ã©ducation
+	indexint_chambery.sql : indexation style Dewey de la BM de ChambÃ©ry, trÃ¨s bien conÃ§ue
+	mais peu adaptÃ©e Ã  des petites bibliothÃ¨ques
 	indexint_dewey.sql : indexation style Dewey
-	indexint_small_en.sql : indexation style Dewey réduite et en anglais
+	indexint_small_en.sql : indexation style Dewey rÃ©duite et en anglais
 	
 
 ************************************************************************************************
 ________________________________________________________________________________________________
-Attention, si vous faites une mise à jour d'une base existante :
+Attention, si vous faites une mise Ã  jour d'une base existante :
 ------------------------------------------------------------------------------------------------
-*********** A faire suite à chaque installation ou mise à jour de l'application ****************
+*********** A faire suite Ã  chaque installation ou mise Ã  jour de l'application ****************
 Quand vous installez une nouvelle version 
-sur une version précédente, vous devez impérativement, 
-après la copie des fichiers contenus dans cette archive 
+sur une version prÃ©cÃ©dente, vous devez impÃ©rativement, 
+aprÃ¨s la copie des fichiers contenus dans cette archive 
 sur le serveur web :
 
-vérifiez que les paramètres contenus dans :
+vÃ©rifiez que les paramÃ¨tres contenus dans :
 ./includes/db_param.inc.php
 ./opac_css/includes/opac_db_param.inc.php
 
-correspondent à votre configuration (faites une sauvegarde avant !)
+correspondent Ã  votre configuration (faites une sauvegarde avant !)
 
 En outre :
-Vous devez faire la mise à jour du noyau de la base de données.
+Vous devez faire la mise Ã  jour du noyau de la base de donnÃ©es.
 Rien ne sera perdu.
 
-Connectez-vous de manière habituelle à PMB, le style graphique peut 
-être différent, voire absent (affichage assez décousu sans couleur ni images)
+Connectez-vous de maniÃ¨re habituelle Ã  PMB, le style graphique peut 
+Ãªtre diffÃ©rent, voire absent (affichage assez dÃ©cousu sans couleur ni images)
 
-Passez en Administration > Outils > maj base pour mettre à jour le noyau de
-votre base de données.
+Passez en Administration > Outils > maj base pour mettre Ã  jour le noyau de
+votre base de donnÃ©es.
 
-Une série de messages vous indiqueront les mises à jour successives, 
-poursuivez la mise à jour de la base par le lien en bas de page jusqu'à voir 
-s'afficher 'Votre base est à jour en version...'
+Une sÃ©rie de messages vous indiqueront les mises Ã  jour successives, 
+poursuivez la mise Ã  jour de la base par le lien en bas de page jusqu'Ã  voir 
+s'afficher 'Votre base est Ã  jour en version...'
 
-Vous pouvez alors éditer votre compte pour modifier éventuellement 
-vos préférences, notamment le style d'affichage.
-
-N'hésitez pas à nous faire part de vos problèmes ou idées 
-par mail : pmb@sigb.net
-
-En outre, nous serions heureux de vous compter parmi nos utilisateurs et
-quelques chiffres tels que nombre de lecteurs, d'ouvrages, de CD... avec les
-coordonnées de votre établissement (ou à titre particulier) nous suffiront
-pour mieux vous connaitre.
-
-Plus d'informations dans le répertoire ./doc ou bien 
-sur notre site http://www.sigb.net
-
-L'équipe des développeurs.
+Vous pouvez alors Ã©diter votre compte pour modifier Ã©ventuellement 
+vos prÃ©fÃ©rences, notamment le style d'affichage.
 
 
 ///////////////////// Liste des tables remplies par fichiers /////////////////
@@ -133,16 +120,16 @@ L'équipe des développeurs.
 # Contenu de la table procs_classements
 # Contenu de la table search_perso
 # Contenu de la table statopac_request
-# Création et contenu de la table statopac_vue_1
-# Création et contenu de la table statopac_vue_2
-# Création et contenu de la table statopac_vue_3
-# Création et contenu de la table statopac_vue_4
-# Création et contenu de la table statopac_vue_5
+# CrÃ©ation et contenu de la table statopac_vue_1
+# CrÃ©ation et contenu de la table statopac_vue_2
+# CrÃ©ation et contenu de la table statopac_vue_3
+# CrÃ©ation et contenu de la table statopac_vue_4
+# CrÃ©ation et contenu de la table statopac_vue_5
 # Contenu de la table statopac_vues
 # Contenu de la table statopac_vues_col
 
 \_/-\_/-\_/-\_/-\_/-\_/-\_/-\            bibliportail.sql
-# Contenu nécéssaire à la demo du portail
+# Contenu nÃ©cÃ©ssaire Ã  la demo du portail
 
 \_/-\_/-\_/-\_/-\_/-\_/-\_/-\            data_test.sql
 # Contenu de la table analysis
@@ -158,9 +145,9 @@ L'équipe des développeurs.
 # Contenu de la table connectors_categ_sources
 # Contenu de la table connectors_sources
 # Contenu de la table empr
-# Création et contenu de la table entrepot_source_2
-# Création et contenu de la table entrepot_source_4
-# Création et contenu de la table entrepot_source_5
+# CrÃ©ation et contenu de la table entrepot_source_2
+# CrÃ©ation et contenu de la table entrepot_source_4
+# CrÃ©ation et contenu de la table entrepot_source_5
 # Contenu de la table equations
 # Contenu de la table exemplaires
 # Contenu de la table explnum
