@@ -1,16 +1,13 @@
-# PMB LudoTech
-Un fork du fameux PMB Biblio (www.sigb.net/) pour gérer une ludothèque plutôt qu'une bibliothèque.
+# Petites & Moyennes Ludothèques (PML)
+Ce logiciel de gestion de ludothèques offre notamment les fonctionnalités suivantes :
+- gestion des notices, avec partage via Z39.50
+- gestion des exemplaires
+- gestion des emprunteurs
+- catalogue en ligne
 
-**Attention:**  La société PMB Service (http://www.sigb.net/) n'est en aucun cas affiliée avec ce projet. Veuillez ne pas les contacter pour des problèmes liés à PMB LudoTech, nous en sommes les seuls respons\
-ables :-).
-
-
-Dans PMB LudoTech, certaines fonctionnalités ont été adaptées et ne fonctionnent plus vraiment comme la version originale dans PMB Biblio.
-La plus	 notable   étant la création de la   base de données  qui n'est plus possible depuis l'interface PMB,	vous trouverez ici la base de données minimale à utiliser:
-
-https://github.com/cocof-cirb/docker-pmb-ludotech-distribution-internet/tree/master/resources/db/dump
-
-Consultez aussi notre image Docker correspondante, c'est notre seule documentation à l'heure actuelle: 
-https://github.com/cocof-cirb/docker-pmb-ludotech-distribution-internet
-
-Et... amusez-vous bien.
+# Origines
+PML est un fork de PMB LudoTech (https://github.com/cocof-cirb/pmb_ludoTech) de la COCOF/Ludéo, v4.2 (03/2020).
+Il est né suite au besoin de faire évoluer le logiciel de façon indépendante.
+PMB LudoTech est lui-même un fork de PMB (https://www.sigb.net) de SIGB, v4.2.6 (08/2017).
+Il s'agissait alors d'un logiciel de gestion de bibliothèque.
+Ces deux entités ne sont pas affiliées avec PML, qui est géré par le collectif Ludilab (https://www.ludilab.eu)
