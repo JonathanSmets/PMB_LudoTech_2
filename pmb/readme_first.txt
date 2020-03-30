@@ -1,43 +1,27 @@
 Quand vous installez une nouvelle version 
-sur une version précédente, vous devez impérativement, 
-après la copie des fichiers contenus dans cette archive 
+sur une version prÃ©cÃ©dente, vous devez impÃ©rativement, 
+aprÃ¨s la copie des fichiers contenus dans cette archive 
 sur le serveur web :
 
-vérifiez que les paramètres contenus dans :
+vÃ©rifiez que les paramÃ¨tres contenus dans :
 ./includes/db_param.inc.php
 ./opac_css/includes/opac_db_param.inc.php
 
-correspondent à votre configuration (faites une sauvegarde avant !)
+correspondent Ã  votre configuration (faites une sauvegarde avant !)
 
 En outre :
-Vous devez faire la mise à jour du noyau de la base de données.
+Vous devez faire la mise Ã  jour du noyau de la base de donnÃ©es.
 Rien ne sera perdu.
 
-Connectez-vous de manière habituelle à PMB, le style graphique peut 
-être différent, voire absent (affichage assez décousu sans couleur ni images)
+Connectez-vous de maniÃ¨re habituelle Ã  PML, le style graphique peut 
+Ãªtre diffÃ©rent, voire absent (affichage assez dÃ©cousu sans couleur ni images)
 
-Passez en Administration > Outils > maj base pour mettre à jour le noyau de
-votre base de données.
+Passez en Administration > Outils > maj base pour mettre Ã  jour le noyau de
+votre base de donnÃ©es.
 
-Une série de messages vous indiqueront les mises à jour successives, 
-poursuivez la mise à jour de la base par le lien en bas de page jusqu'à voir 
-s'afficher 'Votre base est à jour en version...'
+Une sÃ©rie de messages vous indiqueront les mises Ã  jour successives, 
+poursuivez la mise Ã  jour de la base par le lien en bas de page jusqu'Ã  voir 
+s'afficher 'Votre base est Ã  jour en version...'
 
-Vous pouvez alors éditer votre compte pour modifier éventuellement 
-vos préférences, notamment le style d'affichage.
-
-N'hésitez pas à nous faire part de vos problèmes ou idées 
-par mail : pmb@sigb.net
-
-En outre, nous serions heureux de vous compter parmi nos utilisateurs et
-quelques chiffres tels que nombre de lecteurs, d'ouvrages, de CD... avec les
-coordonnées de votre établissement (ou à titre particulier) nous suffiront
-pour mieux vous connaitre.
-
-Plus d'informations dans le répertoire ./doc ou bien 
-sur notre site http://www.sigb.net
-
-L'équipe des développeurs.
-
-
-
+Vous pouvez alors Ã©diter votre compte pour modifier Ã©ventuellement 
+vos prÃ©fÃ©rences, notamment le style d'affichage.
