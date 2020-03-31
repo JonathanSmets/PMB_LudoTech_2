@@ -1,5 +1,5 @@
 <h1>Administration module</h1>
-<p>You have accessed PMB's administration module. Your actions here will affect the overall application functionality.  Please <b>be very careful</b> when using this module. Before doing anything here, think about the impact it will cause on your data. When in doubt, we invite you to <b>send us an email</b> to <a href="mailto:pmb.user@sigb.net"><b>pmb.user@sigb.net</b></a>. We will be very pleased to help you!</p>
+<p>You have accessed PML's administration module. Your actions here will affect the overall application functionality.  Please <b>be very careful</b> when using this module. Before doing anything here, think about the impact it will cause on your data.</p>
 
 <h2>catalog</h2>
 <p>This section allows you to define application settings for <b>loans and statistics</b>.
@@ -24,6 +24,3 @@
 
 <h2>tools</h2>
 <p>Here you will find tools for <b>managing the database</b>.  We strongly suggest that you make periodical <b>database backups</b>.</p>
-
-<p align="right">The Development Team</p>
- 
