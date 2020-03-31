@@ -13,7 +13,7 @@ Le logiciel est conçu selon une architecture trois tiers classiques :
 <br/>L'installation sur votre serveur d'application est donc accessible à tout-e professionnel-le du web, et aucune installation sur vos postes de travail n'est nécessaire.
 
 # Licence
-PML est diffusé suivant les termes de la GNU General Public License (GPL) version 3.
+PML est diffusé suivant les termes de la GNU General Public License (GPL) version 3. Pour plus d'infos, voir COPYING.md.
 
 # Origines
 PML est un fork de PMB LudoTech (https://github.com/cocof-cirb/pmb_ludoTech) de la COCOF/Ludéo, v4.2 (03/2020).
